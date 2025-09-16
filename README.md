@@ -49,6 +49,10 @@ Environment variables:
 - ALLOW_ORIGINS — comma-separated allowed origins for CORS (default *). Example: http://localhost:5173,http://127.0.0.1:5173
 - REDIS_URL — optional Redis connection (e.g., 
 edis://localhost:6379/0). If unset or unavailable, an in-memory fallback is used.
+ - API_KEY — optional API key to protect sensitive endpoints (e.g. `/api/v1/trades/execute`). If unset, auth is disabled for local dev.
+ - SOLANA_RPC_URL — optional Solana RPC URL (e.g. devnet RPC). If set, the Execution adapter will attempt to perform real RPC calls when `live=true` is passed to execute endpoints.
+ - ALLOW_MAINNET_TRANSACTIONS — set to a truthy value (`1`, `true`, `yes`) to allow mainnet transactions. Default: disabled. Use with caution.
+ - ENABLE_INTERNET_RESEARCH — set to a truthy value to allow the research agent to fetch token lists from public APIs (e.g. CoinGecko). Default: disabled (safer for offline/dev).
 
 See .env.example for a starter.
 

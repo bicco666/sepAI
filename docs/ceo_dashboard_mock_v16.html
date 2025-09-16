@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CEO Ãœbersicht â€“ Solana Trading Organisation (Design-Mockup v0.6)</title>
+  <title>CEO Übersicht – Solana Trading Organisation (Design-Mockup v0.6)</title>
   <style>
     :root{
       --bg: #0b0c10;
@@ -61,25 +61,25 @@
   <div class="wrap">
     <header>
       <div>
-        <div class="h1">CEO Ãœbersicht</div>
-        <div class="sub">Solana Trading Organisation â€¢ Design-Mockup (v0.6, UI-only)</div>
+  <div class="h1">CEO Übersicht</div>
+  <div class="sub">Solana Trading Organisation • Design-Mockup (v0.6, UI-only)</div>
       </div>
     </header>
 
     <div class="grid g-3">
       <section class="card">
-        <div class="title">Aktuelle ASCII-Firmenstruktur</div>
-        <pre class="ascii">                       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                       â”‚   1. GeschÃ¤fts-    â”‚
-                       â”‚   fÃ¼hrung (CEO)    â”‚
-                       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                   â”‚
-        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-        â”‚              â”‚           â”‚               â”‚              â”‚
- â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”´â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”
- â”‚ 2. Quality â”‚ â”‚ 3. Forschungâ”‚ â”‚4. Analyseâ”‚ â”‚5. Execution â”‚ â”‚6. Update  â”‚
- â”‚   (Agent)  â”‚ â”‚   (Agent)   â”‚ â”‚  (Agent) â”‚ â”‚   (Agent)   â”‚ â”‚  Handler  â”‚
- â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜</pre>
+   <div class="title">Aktuelle ASCII-Firmenstruktur</div>
+   <pre class="ascii">                       ┌────────────────────────────────────────────────────┐
+        │   1. Geschäfts-    │
+        │   führung (CEO)    │
+        └────────────────────────────────────────────────────┘
+              │
+   ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+   │              │           │               │              │
+ ┌──────┘ ┌──────┘ ┌──────┘ ┌──────┘ ┌──────┘
+ │ 2. Quality │ 3. Forschung │4. Analyse │5. Execution │6. Update  │
+ │   (Agent)  │   (Agent)   │  (Agent) │   (Agent)   │  Handler  │
+ └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘</pre>
       </section>
 
       <section class="card wallet">
@@ -87,15 +87,16 @@
         <div><span class="chip">Adresse</span> <span class="mono">So1anaEXAMPLEaddre55...............1234</span></div>
         <div style="margin-top:8px"><span class="chip">Kontostand</span> <strong class="mono" id="balance">â€”</strong></div>
         <div class="toolbar">
-          <button class="btn" disabled>Adresse setzen</button>
+          <button class="btn" id="setAddress">Adresse setzen</button>
           <button class="btn" id="refreshBalance" title="Design-Phase: ohne echte RPC">Kontostand abrufen</button>
+          <button class="btn" id="btnGenerateStrategies" title="Trigger: Analyse-Agent">Strategien generieren</button>
         </div>
-        <p class="sub">Hinweis: Button ist im Design aktiv, zeigt aber nur Demo-Wert (keine RPC-Anbindung).</p>
+        <p class="sub">Hinweis: Buttons sind im Design aktiv; einige Aktionen rufen die API auf (dev/modus).</p>
       </section>
     </div>
 
     <section class="card" style="margin-top:18px">
-      <div class="title">Abteilungen 2â€“5 â€¢ Status, Version & RISK</div>
+  <div class="title">Abteilungen 2–5 • Status, Version & RISK</div>
       <div class="status-grid">
         <div class="dept">
           <div class="top"><strong>2. Quality</strong><span class="badge">bereit</span></div>
@@ -121,8 +122,8 @@
         </div>
       </div>
       <!-- Idea generation toolbar -->
-      <div class="idea-toolbar">
-        <label for="ideaTimeVal">Zeit fÃ¼r Idee:</label>
+  <div class="idea-toolbar">
+  <label for="ideaTimeVal">Zeit für Idee:</label>
         <input id="ideaTimeVal" class="input" type="number" min="5" step="5" value="30" />
         <select id="ideaTimeUnit" class="select">
           <option value="minutes">Minuten</option>
@@ -130,12 +131,35 @@
         </select>
         <button id="btnIdea" class="btn">Idee generieren</button>
       </div>
-      <div id="ideaToast" class="toast">Design-Hinweis: Hier wÃ¼rden die Agents mit der Ideenerarbeitung starten â€¦</div>
+      <div id="ideaToast" class="toast">Design-Hinweis: Hier würden die Agents mit der Ideenerarbeitung starten …</div>
+    </section>
+
+    <!-- Strategien Section -->
+    <section class="card" id="strategies-card" style="margin-top:18px">
+      <div class="title">Strategien (Drafts) â€“ neueste zuerst</div>
+      <p class="sub">Strategien, erzeugt aus Ideen. Aktionen: QA, Freigabe, Ausführung.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Zeit</th>
+            <th>Idea ID</th>
+            <th>Entry</th>
+            <th>Exit</th>
+            <th>Stop-Loss</th>
+            <th>Take-Profit</th>
+            <th>Status</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="strategies-tbody">
+          <tr><td colspan="8" class="sub">Keine Strategien vorhanden.</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section class="card" style="margin-top:18px">
-      <div class="title">ZukÃ¼nftige AuftrÃ¤ge (Ideen) â€“ neueste zuerst</div>
-      <p class="sub">RISK-Override pro Idee mÃ¶glich. Aktionen sind im Design deaktiviert.</p>
+  <div class="title">Zukünftige Aufträge (Ideen) – neueste zuerst</div>
+  <p class="sub">RISK-Override pro Idee möglich. Aktionen sind im Design deaktiviert.</p>
       <table>
         <thead>
           <tr>
@@ -355,7 +379,7 @@
     </section>
 
     <section class="card" style="margin-top:18px">
-      <div class="title">AusgefÃ¼hrte AuftrÃ¤ge (Historie) â€“ letzte 20, neueste zuerst</div>
+      <div class="title">Ausgeführte Aufträge (Historie) – letzte 20, neueste zuerst</div>
       <table>
         <thead>
           <tr>
@@ -574,7 +598,7 @@
       </table>
     </section>
 
-    <footer style="margin-top:18px">Design-Version 0.6 â€¢ UI-only â€¢ â€žKontostand abrufenâ€œ zeigt Demo-Wert</footer>
+  <footer style="margin-top:18px">Design-Version 0.6 • UI-only • „Kontostand abrufen“ zeigt Demo-Wert</footer>
   </div>
 
   <script>
@@ -732,18 +756,19 @@
           const riskInput = document.getElementById('riskResearch');
           const risk = riskInput ? Math.max(1, Math.min(5, parseInt(riskInput.value || '3', 10))) : 3;
           try {
-            const res = await fetch('/api/v1/ideas', {
+            // Trigger the research agent which will generate multiple ideas and publish them
+            const res = await fetch('/api/v1/agents/research/generate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ source: 'research', asset: 'SOL', type: 'yield', risk, budget: 0.1, ttl })
+              body: JSON.stringify({ time_value: v, time_unit: unitIsHours ? 'hours' : 'minutes', risk_pref: risk, live: false })
             });
             if (!res.ok) throw new Error('HTTP '+res.status);
             const data = await res.json();
-            ideaToast.innerText = `Idee erstellt (#${data.id.slice(0,6)}…) mit RISK ${risk} und TTL ${Math.round(ttl/60)} min.`;
+            ideaToast.innerText = `Forschung gestartet: ${data.count} Ideen erstellt (erste: ${data.ideas && data.ideas[0] ? data.ideas[0].asset : '—'}).`;
             // Refresh ideas list
             refreshIdeas();
           } catch (e) {
-            ideaToast.innerText = 'Fehler: Idee konnte nicht erstellt werden.';
+            ideaToast.innerText = 'Fehler: Forschung konnte nicht gestartet werden.';
             console.error(e);
           }
           ideaToast.style.display = 'block';
@@ -797,6 +822,96 @@
       refreshHistory();
       renderAgents();
       renderReleases();
+    })();
+  </script>
+
+  <script>
+    // Strategies: fetch and render, trigger generation and execution
+    (function(){
+      function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+      async function fetchStrategies(){
+        try {
+          const res = await fetch('/api/v1/strategies');
+          if (!res.ok) throw new Error('HTTP '+res.status);
+          const list = await res.json();
+          return list || [];
+        } catch (e){ console.error('fetchStrategies failed', e); return []; }
+      }
+
+      function renderStrategies(list){
+        const tb = document.getElementById('strategies-tbody');
+        if (!tb) return;
+        if (!list || !list.length){
+          tb.innerHTML = '<tr><td colspan="8" class="sub">Keine Strategien vorhanden.</td></tr>';
+          return;
+        }
+        const rows = list.map(it => {
+          const dt = it.created_at ? new Date(it.created_at) : new Date();
+          const id = esc(it.id || it.idea_id || '');
+          const entry = esc(it.entry_conditions || '');
+          const exit = esc(it.exit_conditions || '');
+          const sl = Number(it.stop_loss || 0).toFixed(4);
+          const tp = Number(it.take_profit || 0).toFixed(4);
+          const status = esc(it.status || 'DRAFT');
+          return `<tr data-strategy="${id}">`+
+            `<td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>`+
+            `<td>${id}</td>`+
+            `<td>${entry}</td>`+
+            `<td>${exit}</td>`+
+            `<td>${sl}</td>`+
+            `<td>${tp}</td>`+
+            `<td>${status}</td>`+
+            `<td class="actions-inline"><button class="btn" data-action="execute" data-id="${id}">Execute</button></td>`+
+          `</tr>`;
+        }).join('');
+        tb.innerHTML = rows;
+        // attach execute handlers
+        tb.querySelectorAll('button[data-action=execute]').forEach(b => {
+          b.addEventListener('click', async (ev) => {
+            const sid = b.getAttribute('data-id');
+            try {
+              // Find the strategy in list
+              const strat = list.find(s => (s.id||s.idea_id) === sid);
+              // Minimal trade payload: use strategy to create a BUY for asset in idea (best-effort)
+              const body = { action: 'BUY', address: '', amount: 0.01, asset: (strat && strat.entry_conditions) ? strat.entry_conditions.split(' ')[0] : 'SOL', price: null, live: false };
+              const res = await fetch('/api/v1/trades/execute', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+              if (!res.ok) throw new Error('HTTP '+res.status);
+              const data = await res.json();
+              alert('Execution scheduled: '+(data.id||'—'));
+            } catch (e){
+              console.error('execute failed', e);
+              alert('Execution fehlgeschlagen');
+            }
+          });
+        });
+      }
+
+      async function refreshStrategies(){
+        const list = await fetchStrategies();
+        renderStrategies(list);
+      }
+
+      // Wire generate strategies button
+      const genBtn = document.getElementById('btnGenerateStrategies');
+      if (genBtn){
+        genBtn.addEventListener('click', async () => {
+          genBtn.disabled = true;
+          try {
+            const res = await fetch('/api/v1/strategies/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({limit:5}) });
+            if (!res.ok) throw new Error('HTTP '+res.status);
+            const data = await res.json();
+            alert('Strategien erzeugt: '+(data.count||0));
+            await refreshStrategies();
+          } catch (e){ console.error('generate strategies failed', e); alert('Generierung fehlgeschlagen'); }
+          genBtn.disabled = false;
+        });
+      }
+
+      // initial
+      refreshStrategies();
+      // expose for console
+      window.refreshStrategies = refreshStrategies;
     })();
   </script>
 </body>
