@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CEO Übersicht – Solana Trading Organisation (Design-Mockup v0.6)</title>
+  <style>
+    :root{
+      --bg: #0b0c10;
+      --ink: #e8eaf0;
+      --muted: #9aa3b2;
+      --border: #23283a;
+      --panel: #121423;
+      --accent: #7c5cff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:#0b0c10;color:#e8eaf0;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .h1{font-size:clamp(20px,2.2vw,30px);font-weight:700}
+    .sub{color:var(--muted);font-size:14px}
+    .grid{display:grid;gap:18px}
+    .g-3{grid-template-columns:1fr}
+    @media(min-width:960px){.g-3{grid-template-columns:2fr 1fr}}
+    .card{background:linear-gradient(180deg,#121423,#0f1220);border:1px solid var(--border);border-radius:18px;padding:18px}
+    .title{font-weight:600;margin:0 0 10px 0}
+    pre.ascii{background:#0a0d18;border:1px solid #0f1220;color:#cbd5e1;border-radius:14px;padding:14px;overflow:auto;font-size:12px;line-height:1.35}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0f1220;border:1px solid var(--border);font-size:12px;color:#9aa3b2}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .status-grid{display:grid;gap:14px;grid-template-columns:repeat(1,minmax(0,1fr))}
+    @media(min-width:820px){.status-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .dept{background:linear-gradient(180deg,#121423,#0e1120);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+    .top{display:flex;align-items:center;justify-content:space-between}
+    .badge{padding:6px 10px;border-radius:999px;font-size:11px;border:1px solid var(--border);background:#0b1220;color:#cbd5e1}
+    .version{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;font-size:11px;margin-left:8px}
+    .links{display:flex;gap:8px;flex-wrap:wrap}
+    .link{font-size:12px;color:#a5b4fc;text-decoration:none;border-bottom:1px dashed #4f46e5}
+    .risk{display:flex;align-items:center;gap:10px}
+    .risk .val{font-weight:700}
+    .range{width:160px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:10px 8px;border-bottom:1px solid #1f2436;font-size:14px;text-align:left;vertical-align:middle}
+    thead th{background:#0e1324;color:#c9d2e3;text-transform:uppercase;font-size:12px;letter-spacing:.03em}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:#0d1122;font-size:12px;color:#c3c9d5}
+    .pnl-pos{color:#7ef7b1} .pnl-neg{color:#ff9aa0}
+    .risk-inline{display:flex;align-items:center;gap:8px}
+    .risk-inline input[type=range]{width:140px}
+    .actions-inline{display:flex;gap:6px;flex-wrap:wrap}
+    .btn-ghost{background:transparent;border:1px dashed var(--border);padding:6px 10px;border-radius:10px;color:#e8eaf0}
+    .btn-ghost[disabled]{opacity:.5;cursor:not-allowed}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{appearance:none;border:1px solid var(--border);background:linear-gradient(180deg,#171a26,#121523);color:#e8eaf0;padding:10px 14px;border-radius:12px;cursor:pointer}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .idea-toolbar{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .input{background:#0d1122;border:1px solid var(--border);color:#e8eaf0;border-radius:10px;padding:8px 10px}
+    .toast{margin-top:10px;border:1px dashed #3b82f6;background:rgba(59,130,246,.08);color:#cfe1ff;padding:10px;border-radius:10px;display:none}
+    .select{background:#0d1122;border:1px solid var(--border);color:#e8eaf0;border-radius:10px;padding:8px 10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="h1">CEO Übersicht</div>
+        <div class="sub">Solana Trading Organisation • Design-Mockup (v0.6, UI-only)</div>
+      </div>
+    </header>
+
+    <div class="grid g-3">
+      <section class="card">
+        <div class="title">Aktuelle ASCII-Firmenstruktur</div>
+        <pre class="ascii">                       ┌────────────────────┐
+                       │   1. Geschäfts-    │
+                       │   führung (CEO)    │
+                       └───────────┬────────┘
+                                   │
+        ┌──────────────┬───────────┼───────────────┬──────────────┐
+        │              │           │               │              │
+ ┌──────┴─────┐ ┌──────┴─────┐ ┌───┴─────┐ ┌───────┴──────┐ ┌─────┴─────┐
+ │ 2. Quality │ │ 3. Forschung│ │4. Analyse│ │5. Execution │ │6. Update  │
+ │   (Agent)  │ │   (Agent)   │ │  (Agent) │ │   (Agent)   │ │  Handler  │
+ └────────────┘ └─────────────┘ └──────────┘ └─────────────┘ └──────────┘</pre>
+      </section>
+
+      <section class="card wallet">
+        <div class="title">Solana Wallet</div>
+        <div><span class="chip">Adresse</span> <span class="mono">So1anaEXAMPLEaddre55...............1234</span></div>
+        <div style="margin-top:8px"><span class="chip">Kontostand</span> <strong class="mono" id="balance">—</strong></div>
+        <div class="toolbar">
+          <button class="btn" disabled>Adresse setzen</button>
+          <button class="btn" id="refreshBalance" title="Design-Phase: ohne echte RPC">Kontostand abrufen</button>
+        </div>
+        <p class="sub">Hinweis: Button ist im Design aktiv, zeigt aber nur Demo-Wert (keine RPC-Anbindung).</p>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:18px">
+      <div class="title">Abteilungen 2–5 • Status, Version & RISK</div>
+      <div class="status-grid">
+        <div class="dept">
+          <div class="top"><strong>2. Quality</strong><span class="badge">bereit</span></div>
+          <div class="links"><span class="version">v1.2.3</span></div>
+          <p class="sub">Audits, CAPA, Change-Gate.</p>
+        </div>
+        <div class="dept">
+          <div class="top"><strong>3. Forschung</strong><span class="badge">bereit</span></div>
+          <div class="links"><span class="version">v1.2.3</span></div>
+          <div class="risk"><label for="riskResearch">RISK:</label><input id="riskResearch" class="range" type="range" min="1" max="5" step="1" value="2"><span id="riskResearchVal" class="val">2/5</span></div>
+          <p class="sub">Exploration neuer Ertragsquellen.</p>
+        </div>
+        <div class="dept">
+          <div class="top"><strong>4. Analyse</strong><span class="badge">bereit</span></div>
+          <div class="links"><span class="version">v1.2.3</span></div>
+          <div class="risk"><label for="riskAnalysis">RISK:</label><input id="riskAnalysis" class="range" type="range" min="1" max="5" step="1" value="2"><span id="riskAnalysisVal" class="val">2/5</span></div>
+          <p class="sub">Strategien, Backtests, Runbooks.</p>
+        </div>
+        <div class="dept">
+          <div class="top"><strong>5. Execution</strong><span class="badge">bereit</span></div>
+          <div class="links"><span class="version">v1.2.3</span></div>
+          <p class="sub">Orders, Limits, Circuit Breaker.</p>
+        </div>
+      </div>
+      <!-- Idea generation toolbar -->
+      <div class="idea-toolbar">
+        <label for="ideaTimeVal">Zeit für Idee:</label>
+        <input id="ideaTimeVal" class="input" type="number" min="5" step="5" value="30" />
+        <select id="ideaTimeUnit" class="select">
+          <option value="minutes">Minuten</option>
+          <option value="hours">Stunden</option>
+        </select>
+        <button id="btnIdea" class="btn">Idee generieren</button>
+      </div>
+      <div id="ideaToast" class="toast">Design-Hinweis: Hier würden die Agents mit der Ideenerarbeitung starten …</div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <div class="title">Zukünftige Aufträge (Ideen) – neueste zuerst</div>
+      <p class="sub">RISK-Override pro Idee möglich. Aktionen sind im Design deaktiviert.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Zeit</th>
+            <th>Quelle</th>
+            <th>Asset</th>
+            <th>Typ</th>
+            <th>Budget (SOL)</th>
+            <th>RISK</th>
+            <th>Status</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr data-idea="idea_2025_09_15_001">
+          <td>2025-09-15 19:30</td>
+          <td>Forschung</td>
+          <td>PUMP (Solana)</td>
+          <td>short-term trade</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="1" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">1/5</span>
+            </div>
+          </td>
+          <td>NEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_002">
+          <td>2025-09-15 19:25</td>
+          <td>Analyse</td>
+          <td>JUP (Solana)</td>
+          <td>swing</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="2" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">2/5</span>
+            </div>
+          </td>
+          <td>NEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_003">
+          <td>2025-09-15 19:20</td>
+          <td>Forschung</td>
+          <td>SOL</td>
+          <td>yield</td>
+          <td>0,50</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="3" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">3/5</span>
+            </div>
+          </td>
+          <td>NEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_004">
+          <td>2025-09-15 19:15</td>
+          <td>Analyse</td>
+          <td>BONK (Solana)</td>
+          <td>airdrop</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="4" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">4/5</span>
+            </div>
+          </td>
+          <td>NEEDS_REVIEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_005">
+          <td>2025-09-15 19:10</td>
+          <td>Forschung</td>
+          <td>PUMP (Solana)</td>
+          <td>short-term trade</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="5" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">5/5</span>
+            </div>
+          </td>
+          <td>NEEDS_REVIEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_006">
+          <td>2025-09-15 19:05</td>
+          <td>Analyse</td>
+          <td>JUP (Solana)</td>
+          <td>swing</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="1" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">1/5</span>
+            </div>
+          </td>
+          <td>NEEDS_REVIEW</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_007">
+          <td>2025-09-15 19:00</td>
+          <td>Forschung</td>
+          <td>SOL</td>
+          <td>yield</td>
+          <td>0,50</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="2" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">2/5</span>
+            </div>
+          </td>
+          <td>READY_FOR_QA</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_008">
+          <td>2025-09-15 18:55</td>
+          <td>Analyse</td>
+          <td>BONK (Solana)</td>
+          <td>airdrop</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="3" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">3/5</span>
+            </div>
+          </td>
+          <td>READY_FOR_QA</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_009">
+          <td>2025-09-15 18:50</td>
+          <td>Forschung</td>
+          <td>PUMP (Solana)</td>
+          <td>short-term trade</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="4" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">4/5</span>
+            </div>
+          </td>
+          <td>READY_FOR_QA</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        <tr data-idea="idea_2025_09_15_010">
+          <td>2025-09-15 18:45</td>
+          <td>Analyse</td>
+          <td>JUP (Solana)</td>
+          <td>swing</td>
+          <td>0,10</td>
+          <td>
+            <div class="risk-inline">
+              <input type="range" min="1" max="5" step="1" value="5" oninput="this.nextElementSibling.textContent=this.value+'/5'">
+              <span class="val">5/5</span>
+            </div>
+          </td>
+          <td>READY_FOR_QA</td>
+          <td class="actions-inline">
+            <button class="btn-ghost" disabled>Zur Strategie</button>
+            <button class="btn-ghost" disabled>Quality-Check</button>
+            <button class="btn-ghost" disabled>Einplanen</button>
+            <button class="btn-ghost" disabled>Verwerfen</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <div class="title">Ausgeführte Aufträge (Historie) – letzte 20, neueste zuerst</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Zeit</th>
+            <th>Abteilung</th>
+            <th>Asset</th>
+            <th>Aktion</th>
+            <th>Menge</th>
+            <th>PNL (SOL)</th>
+            <th>Dauer</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>2025-09-15 19:00</td>
+          <td>Execution</td>
+          <td>SOL</td>
+          <td>Kauf</td>
+          <td>0,50</td>
+          <td class="pnl-pos">+0,0002</td>
+          <td>00:01:00</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:53</td>
+          <td>Analyse</td>
+          <td>PUMP (Solana)</td>
+          <td>Verkauf</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0001</td>
+          <td>00:03:30</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:46</td>
+          <td>Forschung</td>
+          <td>JUP (Solana)</td>
+          <td>Kauf → Verkauf</td>
+          <td>—</td>
+          <td class="pnl-pos">+0,0000</td>
+          <td>—</td>
+          <td><span class="pill">offen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:39</td>
+          <td>Quality</td>
+          <td>BONK (Solana)</td>
+          <td>Paper-Trade</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0003</td>
+          <td>00:05:00</td>
+          <td><span class="pill">simuliert</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:36</td>
+          <td>Execution</td>
+          <td>SOL</td>
+          <td>Kauf</td>
+          <td>0,50</td>
+          <td class="pnl-pos">+0,0002</td>
+          <td>00:01:00</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:29</td>
+          <td>Analyse</td>
+          <td>PUMP (Solana)</td>
+          <td>Verkauf</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0001</td>
+          <td>00:03:30</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:22</td>
+          <td>Forschung</td>
+          <td>JUP (Solana)</td>
+          <td>Kauf → Verkauf</td>
+          <td>—</td>
+          <td class="pnl-pos">+0,0000</td>
+          <td>—</td>
+          <td><span class="pill">offen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:15</td>
+          <td>Quality</td>
+          <td>BONK (Solana)</td>
+          <td>Paper-Trade</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0003</td>
+          <td>00:05:00</td>
+          <td><span class="pill">simuliert</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:12</td>
+          <td>Execution</td>
+          <td>SOL</td>
+          <td>Kauf</td>
+          <td>0,50</td>
+          <td class="pnl-pos">+0,0002</td>
+          <td>00:01:00</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 18:05</td>
+          <td>Analyse</td>
+          <td>PUMP (Solana)</td>
+          <td>Verkauf</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0001</td>
+          <td>00:03:30</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:58</td>
+          <td>Forschung</td>
+          <td>JUP (Solana)</td>
+          <td>Kauf → Verkauf</td>
+          <td>—</td>
+          <td class="pnl-pos">+0,0000</td>
+          <td>—</td>
+          <td><span class="pill">offen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:51</td>
+          <td>Quality</td>
+          <td>BONK (Solana)</td>
+          <td>Paper-Trade</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0003</td>
+          <td>00:05:00</td>
+          <td><span class="pill">simuliert</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:48</td>
+          <td>Execution</td>
+          <td>SOL</td>
+          <td>Kauf</td>
+          <td>0,50</td>
+          <td class="pnl-pos">+0,0002</td>
+          <td>00:01:00</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:41</td>
+          <td>Analyse</td>
+          <td>PUMP (Solana)</td>
+          <td>Verkauf</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0001</td>
+          <td>00:03:30</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:34</td>
+          <td>Forschung</td>
+          <td>JUP (Solana)</td>
+          <td>Kauf → Verkauf</td>
+          <td>—</td>
+          <td class="pnl-pos">+0,0000</td>
+          <td>—</td>
+          <td><span class="pill">offen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:27</td>
+          <td>Quality</td>
+          <td>BONK (Solana)</td>
+          <td>Paper-Trade</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0003</td>
+          <td>00:05:00</td>
+          <td><span class="pill">simuliert</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:24</td>
+          <td>Execution</td>
+          <td>SOL</td>
+          <td>Kauf</td>
+          <td>0,50</td>
+          <td class="pnl-pos">+0,0002</td>
+          <td>00:01:00</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:17</td>
+          <td>Analyse</td>
+          <td>PUMP (Solana)</td>
+          <td>Verkauf</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0001</td>
+          <td>00:03:30</td>
+          <td><span class="pill">abgeschlossen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:10</td>
+          <td>Forschung</td>
+          <td>JUP (Solana)</td>
+          <td>Kauf → Verkauf</td>
+          <td>—</td>
+          <td class="pnl-pos">+0,0000</td>
+          <td>—</td>
+          <td><span class="pill">offen</span></td>
+        </tr>
+        <tr>
+          <td>2025-09-15 17:03</td>
+          <td>Quality</td>
+          <td>BONK (Solana)</td>
+          <td>Paper-Trade</td>
+          <td>0,10</td>
+          <td class="pnl-neg">-0,0003</td>
+          <td>00:05:00</td>
+          <td><span class="pill">simuliert</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top:18px">Design-Version 0.6 • UI-only • „Kontostand abrufen“ zeigt Demo-Wert</footer>
+  </div>
+
+  <script>
+    // RISK sliders for Forschung/Analyse
+    const rs = document.getElementById('riskResearch');
+    const rsV = document.getElementById('riskResearchVal');
+    const ra = document.getElementById('riskAnalysis');
+    const raV = document.getElementById('riskAnalysisVal');
+    function label(v){return v+'/5'}
+    rs && rs.addEventListener('input', () => rsV.textContent = label(rs.value));
+    ra && ra.addEventListener('input', () => raV.textContent = label(ra.value));
+
+    // Demo balance button
+    const btn = document.getElementById('refreshBalance');
+    const bal = document.getElementById('balance');
+    btn && btn.addEventListener('click', () => {
+      bal.textContent = '1.0000 SOL (demo)';
+    });
+
+    // Idea generation demo
+    const ideaBtn = document.getElementById('btnIdea');
+    const ideaVal = document.getElementById('ideaTimeVal');
+    const ideaUnit = document.getElementById('ideaTimeUnit');
+    const ideaToast = document.getElementById('ideaToast');
+    ideaBtn && ideaBtn.addEventListener('click', () => {
+      const v = Math.max(5, parseInt(ideaVal.value || '0', 10));
+      const u = ideaUnit.value === 'hours' ? 'Stunden' : 'Minuten';
+      ideaToast.innerText = `Design: Idee-Request an Forschung & Analyse mit Zeitbudget ${v} ${u} würde jetzt gestartet werden.`;
+      ideaToast.style.display = 'block';
+      setTimeout(() => ideaToast.style.display = 'none', 2800);
+    });
+  </script>
+</body>
+</html>
