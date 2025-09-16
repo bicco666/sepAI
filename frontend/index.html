@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CEO Übersicht – Solana Trading Organisation (Design-Mockup v0.6)</title>
+ <script src="/frontend/tests_quicktab_hook.html"></script>
   <style>
     :root{
       --bg: #0b0c10;
@@ -99,18 +100,17 @@
     <div class="grid g-3">
       <section class="card">
    <div class="title">Aktuelle ASCII-Firmenstruktur</div>
-   <pre class="ascii">                     
-  ┌────────────────────┐
-  │   1. Geschäfts-    │
-  │   führung (CEO)    │
-  └────────────────────┘
+   <pre class="ascii">                       ┌────────────────────────────────────────────────────┐
+        │   1. Geschäfts-    │
+        │   führung (CEO)    │
+        └────────────────────────────────────────────────────┘
               │
-    ─────────────────────────────────────────────────────────
-   │                   │           │             │           │
- ┌──────────────────────────────────────────────────────────────────
+   ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+   │              │           │               │              │
+ ┌──────┘ ┌──────┘ ┌──────┘ ┌──────┘ ┌──────┘
  │ 2. Quality │ 3. Forschung │4. Analyse │5. Execution │6. Update  │
- │   (Agent)  │   (Agent)    │  (Agent)  │   (Agent)   │  Handler  │
- └─────────────────────────────────────────────────────────────────┘</pre>
+ │   (Agent)  │   (Agent)   │  (Agent) │   (Agent)   │  Handler  │
+ └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘</pre>
       </section>
 
       <section class="card wallet">
@@ -984,306 +984,97 @@
       window.refreshStrategies = refreshStrategies;
     })();
   </script>
+<script>
+// === sepAI wiring v0.2.5-safe (non-destructive) ===
+(function(){
+  const API = {
+    async get(p){ const r=await fetch(p); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} },
+    async post(p,b){ const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})}); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} },
+    async form(p,f){ const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(f).toString()}); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} }
+  };
+  const store = {
+    get addr(){return localStorage.getItem('sepai.wallet.address')||''},
+    set addr(v){localStorage.setItem('sepai.wallet.address',(v||'').trim())},
+    get riskResearch(){return +(localStorage.getItem('sepai.risk.research')||3)},
+    set riskResearch(v){localStorage.setItem('sepai.risk.research',String(v))},
+    get riskAnalysis(){return +(localStorage.getItem('sepai.risk.analysis')||3)},
+    set riskAnalysis(v){localStorage.setItem('sepai.risk.analysis',String(v))},
+  };
+  function qs(x){return document.getElementById(x)}
+  function toast(msg){
+    let t=document.getElementById('globalToast'); if(!t){t=document.createElement('div');t.id='globalToast';t.style.cssText='position:fixed;bottom:18px;right:18px;background:#0d1122;border:1px solid #3b82f6;color:#cfe1ff;padding:10px 14px;border-radius:10px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.35)';document.body.appendChild(t)}
+    t.textContent=msg; t.style.display='block'; clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>t.style.display='none',2600);
+  }
 
-  <script>
-    // ========= sepAI Dashboard Wiring v0.2.5 =========
+  async function initAddress(){
+    if (store.addr) return store.addr;
+    const r = await API.get('/api/v1/wallet/address');
+    if (r.ok && r.data.public_key){ store.addr = r.data.public_key; return store.addr; }
+    return '';
+  }
 
-    const API = {
-      get jsonHeaders(){ return {'Content-Type':'application/json'}; },
-      async get(path){
-        const r = await fetch(path);
-        const t = await r.text();
-        try { return { ok:r.ok, status:r.status, data: JSON.parse(t) }; }
-        catch{ return { ok:r.ok, status:r.status, data: t }; }
-      },
-      async post(path, body){
-        const r = await fetch(path, { method:'POST', headers: this.jsonHeaders, body: JSON.stringify(body||{}) });
-        const t = await r.text();
-        try { return { ok:r.ok, status:r.status, data: JSON.parse(t) }; }
-        catch{ return { ok:r.ok, status:r.status, data: t }; }
-      },
-      async form(path, form){ // x-www-form-urlencoded
-        const r = await fetch(path, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(form).toString() });
-        const t = await r.text();
-        try { return { ok:r.ok, status:r.status, data: JSON.parse(t) }; }
-        catch{ return { ok:r.ok, status:r.status, data: t }; }
-      }
-    };
-
-    const store = {
-      get addr(){ return localStorage.getItem('sepai.wallet.address') || ''; },
-      set addr(v){ localStorage.setItem('sepai.wallet.address', (v||'').trim()); },
-      get riskResearch(){ return +(localStorage.getItem('sepai.risk.research')||2); },
-      set riskResearch(v){ localStorage.setItem('sepai.risk.research', String(v)); },
-      get riskAnalysis(){ return +(localStorage.getItem('sepai.risk.analysis')||2); },
-      set riskAnalysis(v){ localStorage.setItem('sepai.risk.analysis', String(v)); },
-    };
-
-    function qs(sel){ return document.querySelector(sel); }
-    function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
-    function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function fmtTS(ts){ try { const d = new Date(ts*1000); return isFinite(+d)? d.toISOString().slice(0,16).replace('T',' ') : ''; } catch { return '' } }
-    function toast(msg, ms=2600){
-      let t = document.getElementById('globalToast');
-      if (!t){
-        t = document.createElement('div');
-        t.id = 'globalToast';
-        t.style.cssText = 'position:fixed;bottom:18px;right:18px;background:#0d1122;border:1px solid #3b82f6;color:#cfe1ff;padding:10px 14px;border-radius:10px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.35)';
-        document.body.appendChild(t);
-      }
-      t.textContent = msg;
-      t.style.display = 'block';
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(()=> t.style.display='none', ms);
+  async function refreshBalance(){
+    const balEl = qs('balance'); if (!balEl) return;
+    const addr = store.addr || await initAddress();
+    if (!addr){ balEl.textContent = '—'; return; }
+    const r = await API.get(`/api/v1/wallet/balance?address=${encodeURIComponent(addr)}`);
+    if (r.ok){
+      const v = r.data.balance_sol ?? r.data.balance ?? 0;
+      balEl.textContent = `${Number(v).toFixed(4)} SOL`;
+    } else {
+      balEl.textContent = `Fehler (${r.status})`;
     }
+  }
 
-    async function refreshAgents(){
-      const res = await API.get('/api/v1/agents/status');
-      const blocks = qsa('.status-grid .dept');
-      if (!blocks.length) return;
-      if (!res.ok) { console.warn('agents/status failed', res); return; }
-      const map = res.data; // could be array or object
-      function getStatus(name){
-        if (Array.isArray(map)){
-          return map.find(x => (x.name||'').toLowerCase().includes(name)) || {};
-        }
-        return (map[name] || {});
-      }
-      const defs = [
-        { idx:0, key:'quality', label:'2. Quality' },
-        { idx:1, key:'research', label:'3. Forschung' },
-        { idx:2, key:'analysis', label:'4. Analyse' },
-        { idx:3, key:'execution', label:'5. Execution' },
-      ];
-      defs.forEach(d => {
-        const b = blocks[d.idx];
-        if (!b) return;
-        const st = getStatus(d.key);
-        const badge = b.querySelector('.badge');
-        const ver = b.querySelector('.version');
-        if (badge) badge.textContent = st.status || 'unbekannt';
-        if (ver)  ver.textContent = (st.version ? `v${st.version}` : 'v?');
+  async function airdrop(amount){
+    const addr = store.addr || await initAddress();
+    if (!addr) return toast('Adresse fehlt');
+    const r = await API.form('/api/v1/wallet/airdrop', {address: addr, sol: String(amount)});
+    if (r.ok){ toast('Airdrop OK'); refreshBalance(); } else { toast('Airdrop Fehler ('+r.status+')'); }
+  }
+
+  function wire(){
+    // Set address button
+    const setBtn = qs('setAddress');
+    if (setBtn){
+      setBtn.addEventListener('click', async ()=>{
+        const cur = store.addr || 'So1anaEXAMPLEaddre55...............1234';
+        const v = prompt('Solana-Adresse (Base58):', cur);
+        if (v){ store.addr = v.trim(); toast('Adresse gespeichert'); refreshBalance(); }
       });
     }
-
-    async function refreshBalance(){
-      const balEl = document.getElementById('balance');
-      if (!balEl) return;
-      const addr = store.addr;
-      if (!addr){ balEl.textContent = '— (Adresse fehlt)'; return; }
-      const res = await API.get(`/api/v1/wallet/balance?address=${encodeURIComponent(addr)}`);
-      if (res.ok){
-        const v = res.data.balance_sol ?? res.data.balance ?? 0;
-        balEl.textContent = `${Number(v).toFixed(4)} SOL`;
-      } else {
-        balEl.textContent = `Fehler (${res.status})`;
-      }
-    }
-
-    async function airdrop(amount=0.2){
-      const addr = store.addr;
-      if (!addr){ toast('Bitte zuerst Adresse setzen.'); return; }
-      const res = await API.form('/api/v1/wallet/airdrop', { address: addr, sol: String(amount) });
-      if (res.ok){
-        toast('Airdrop ok: ' + (res.data.signature || '—'));
-        refreshBalance();
-      } else {
-        toast('Airdrop Fehler ('+res.status+'): ' + (res.data.detail || res.data));
-      }
-    }
-
-    async function refreshIdeas(){
-      const res = await API.get('/api/v1/ideas');
-      const tbody = document.querySelector('#strategies-card')?.previousElementSibling?.querySelector('tbody') || null;
-      if (!tbody) return;
-      if (!res.ok){ console.warn('ideas list failed', res); return; }
-      const ideas = Array.isArray(res.data) ? res.data : (res.data.items||[]);
-      if (!ideas.length){ return; }
-      tbody.innerHTML = ideas.map(it => {
-        const dt = it.created_at ? new Date(it.created_at) : new Date();
-        return `<tr data-idea="${esc(it.id||'')}">
-          <td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>
-          <td>${esc(it.source||'')}</td>
-          <td>${esc(it.asset||'')}</td>
-          <td>${esc(it.type||'')}</td>
-          <td>${Number(it.budget||0).toFixed(2)}</td>
-          <td><div class="risk-inline">
-            <input type="range" min="1" max="5" step="1" value="${esc(it.risk||3)}" oninput="this.nextElementSibling.textContent=this.value+'/5'">
-            <span class="val">${esc(it.risk||3)}/5</span></div></td>
-          <td>${esc(it.status||'NEW')}</td>
-          <td class="actions-inline"><button class="btn-ghost" disabled>Zur Strategie</button>
-          <button class="btn-ghost" disabled>Quality-Check</button>
-          <button class="btn-ghost" disabled>Einplanen</button>
-          <button class="btn-ghost" disabled>Verwerfen</button></td>
-        </tr>`;
-      }).join('');
-    }
-
-    async function refreshStrategies(){
-      const res = await API.get('/api/v1/strategies');
-      const tb = document.getElementById('strategies-tbody');
-      if (!tb) return;
-      if (!res.ok){ console.warn('strategies failed', res); return; }
-      const list = Array.isArray(res.data) ? res.data : (res.data.items||[]);
-      if (!list.length){
-        tb.innerHTML = '<tr><td colspan="8" class="sub">Keine Strategien vorhanden.</td></tr>';
-        return;
-      }
-      tb.innerHTML = list.map(it => {
-        const dt = it.created_at ? new Date(it.created_at) : new Date();
-        const id = esc(it.id || it.idea_id || '');
-        return `<tr data-strategy="${id}">
-          <td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>
-          <td>${id}</td>
-          <td>${esc(it.entry_conditions||'')}</td>
-          <td>${esc(it.exit_conditions||'')}</td>
-          <td>${Number(it.stop_loss||0).toFixed(4)}</td>
-          <td>${Number(it.take_profit||0).toFixed(4)}</td>
-          <td>${esc(it.status||'DRAFT')}</td>
-          <td class="actions-inline"><button class="btn" data-action="execute" data-id="${id}">Execute</button></td>
-        </tr>`;
-      }).join('');
-      tb.querySelectorAll('button[data-action=execute]').forEach(b => {
-        b.addEventListener('click', async () => {
-          const sid = b.getAttribute('data-id');
-          const body = { action: 'BUY', address: store.addr, amount: 0.01, asset: 'SOL', price: null, live: false };
-          const res = await API.post('/api/v1/trades/execute', body);
-          if (res.ok) toast('Execution geplant: '+(res.data.id||'—'));
-          else toast('Execution Fehler ('+res.status+')');
-        });
+    // Refresh balance button
+    const balBtn = qs('refreshBalance');
+    if (balBtn){
+      balBtn.addEventListener('click', (e)=>{
+        if (e.shiftKey) { e.preventDefault(); airdrop(0.2); } else { refreshBalance(); }
       });
     }
-
-    async function refreshHistory(){
-      const res = await API.get('/api/v1/trades/recent');
-      const sections = Array.from(document.querySelectorAll('.card'));
-      const histCard = sections.find(s => (s.querySelector('.title')||{}).textContent?.toLowerCase().includes('historie'));
-      const tb = histCard ? histCard.querySelector('tbody') : null;
-      if (!tb) return;
-      if (!res.ok){ console.warn('history failed', res); return; }
-      const trades = Array.isArray(res.data) ? res.data : (res.data.items||[]);
-      if (!trades.length) return;
-      tb.innerHTML = trades.map(tr => {
-        const dt = tr.executed_at ? new Date(tr.executed_at) : new Date();
-        const pnl = Number(tr.pnl||0);
-        const pnlCls = pnl >= 0 ? 'pnl-pos' : 'pnl-neg';
-        return `<tr>
-          <td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>
-          <td>${esc(tr.dept||'Execution')}</td>
-          <td>${esc(tr.asset||'')}</td>
-          <td>${esc(tr.action||'')}</td>
-          <td>${Number(tr.quantity||0).toFixed(2)}</td>
-          <td class="${pnlCls}">${pnl>=0?'+':''}${pnl.toFixed(4)}</td>
-          <td>${esc(tr.duration||'')}</td>
-          <td><span class="pill">${esc(tr.status||'')}</span></td>
-        </tr>`;
-      }).join('');
-    }
-
-    function wireUI(){
-      // Set/remember address
-      const setBtn = qs('#setAddress');
-      if (setBtn){
-        setBtn.addEventListener('click', async () => {
-          const cur = store.addr || 'So1anaEXAMPLEaddre55...............1234';
-          const v = prompt('Solana-Adresse (Base58):', cur);
-          if (v){
-            store.addr = v.trim();
-            const chip = document.querySelector('.wallet .mono');
-            if (chip) chip.textContent = store.addr;
-            toast('Adresse gespeichert.');
-            refreshBalance();
-          }
-        });
-      }
-
-      // Balance button
-      const btnBal = qs('#refreshBalance');
-      btnBal && btnBal.addEventListener('click', refreshBalance);
-
-      // Generate strategies
-      const genBtn = qs('#btnGenerateStrategies');
-      if (genBtn){
-        genBtn.addEventListener('click', async () => {
-          genBtn.disabled = true;
-          const res = await API.post('/api/v1/strategies/generate', { limit: 5 });
-          if (res.ok){ toast('Strategien erzeugt: ' + (res.data.count||0)); refreshStrategies(); }
-          else { toast('Strategien Fehler ('+res.status+')'); }
-          genBtn.disabled = false;
-        });
-      }
-
-      // Idea generator (existing button)
-      const ideaBtn = qs('#btnIdea');
-      const ideaVal = qs('#ideaTimeVal');
-      const ideaUnit = qs('#ideaTimeUnit');
-      const ideaToast = qs('#ideaToast');
-      if (ideaBtn && ideaToast){
-        ideaBtn.addEventListener('click', async () => {
-          const v = Math.max(5, parseInt((ideaVal && ideaVal.value) || '0', 10));
-          const unit = (ideaUnit && ideaUnit.value) || 'minutes';
-          const risk = +(qs('#riskResearch')?.value || store.riskResearch || 3);
-          const res = await API.post('/api/v1/agents/research/generate', { time_value: v, time_unit: unit, risk_pref: risk, live: false });
-          if (res.ok){ ideaToast.textContent = `Forschung gestartet: ${res.data.count||0} Ideen.`; refreshIdeas(); }
-          else { ideaToast.textContent = 'Fehler: Forschung konnte nicht gestartet werden.'; }
-          ideaToast.style.display = 'block';
-          setTimeout(()=> ideaToast.style.display='none', 2600);
-        });
-      }
-
-      // Persist risk sliders
-      const rs = qs('#riskResearch'); const rsV = qs('#riskResearchVal');
-      const ra = qs('#riskAnalysis'); const raV = qs('#riskAnalysisVal');
-      if (rs){ rs.value = store.riskResearch; rsV && (rsV.textContent = rs.value+'/5'); rs.addEventListener('input', ()=>{ store.riskResearch = +rs.value; rsV && (rsV.textContent = rs.value+'/5'); }); }
-      if (ra){ ra.value = store.riskAnalysis; raV && (raV.textContent = ra.value+'/5'); ra.addEventListener('input', ()=>{ store.riskAnalysis = +ra.value; raV && (raV.textContent = ra.value+'/5'); }); }
-
-      // Quick test links box on the right
-      const testLinks = document.querySelectorAll('.test-link');
-      const testLog = document.getElementById('testNavResult');
-      const pretty = (val) => typeof val === 'string' ? val : JSON.stringify(val, null, 2);
-      testLinks.forEach(link => {
-        link.addEventListener('click', async (event) => {
-          event.preventDefault();
-          if (!testLog) return;
-          const endpoint = link.dataset.endpoint;
-          const method = (link.dataset.method || 'GET').toUpperCase();
-          const body = link.dataset.body || '';
-          const headers = body && method!=='GET' ? {'Content-Type':'application/json'} : {};
-          testLinks.forEach(it => it.classList.remove('is-active'));
-          link.classList.add('is-active');
-          testLog.textContent = `Starte ${link.textContent.trim()}…`;
-          try {
-            const res = await fetch(endpoint, { method, headers, body: body && method!=='GET' ? body : undefined });
-            const raw = await res.text();
-            let parsed = raw; try{ parsed = JSON.parse(raw); } catch{}
-            testLog.textContent = `Status ${res.status}: ${pretty(parsed)}`;
-          } catch (error) {
-            testLog.textContent = `Fehler: ${(error && error.message) || error}`;
-          }
-        });
-      });
-
-      // Airdrop shortcut: Shift+Click auf Balance-Button
-      btnBal && btnBal.addEventListener('click', async (e) => {
-        if (e.shiftKey){ e.preventDefault(); await airdrop(0.2); }
+    // Idea generator
+    const ideaBtn = qs('btnIdea');
+    const ideaVal = qs('ideaTimeVal');
+    const ideaUnit = qs('ideaTimeUnit');
+    if (ideaBtn){
+      ideaBtn.addEventListener('click', async ()=>{
+        const v = Math.max(5, parseInt((ideaVal && ideaVal.value)||'10',10));
+        const u = (ideaUnit && ideaUnit.value)||'minutes';
+        const risk = +(qs('riskResearch')?.value||store.riskResearch||3);
+        const r = await API.post('/api/v1/agents/research/generate', { time_value: v, time_unit: u, risk_pref: risk, live: false });
+        if (r.ok) toast('Ideen generiert: '+(r.data.count||0)); else toast('Fehler bei Idee');
       });
     }
+    // Persist risk sliders
+    const rs = qs('riskResearch'); const rsV = qs('riskResearchVal');
+    const ra = qs('riskAnalysis'); const raV = qs('riskAnalysisVal');
+    if (rs){ rs.value = store.riskResearch; rsV && (rsV.textContent = rs.value+'/5'); rs.addEventListener('input', ()=>{ store.riskResearch = +rs.value; rsV && (rsV.textContent = rs.value+'/5'); }); }
+    if (ra){ ra.value = store.riskAnalysis; raV && (raV.textContent = ra.value+'/5'); ra.addEventListener('input', ()=>{ store.riskAnalysis = +ra.value; raV && (raV.textContent = ra.value+'/5'); }); }
+  }
 
-    async function boot(){
-      // Title/labels small fix
-      document.title = 'CEO Übersicht – Solana Trading Organisation';
-      const chipAddr = document.querySelector('.wallet .mono');
-      if (chipAddr && store.addr) chipAddr.textContent = store.addr;
-      wireUI();
-      await refreshAgents();
-      await refreshBalance();
-      await refreshIdeas();
-      await refreshStrategies();
-      await refreshHistory();
-    }
-    (function(){ if (document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot); })();
-    // ========= /wiring =========
-  </script>
-
+  async function boot(){ wire(); await initAddress(); await refreshBalance(); }
+  if (document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+// === /wiring ===
+</script>
 </body>
 </html>
+
