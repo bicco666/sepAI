@@ -1,0 +1,646 @@
+# Wallet/API Testreport
+
+- Datum: 2025-09-16T22:36:45
+- Gesamt: **0**, Passed: **0**, Failed: **0**, Errors: **0**, Skipped: **0**
+
+## Details
+- **test_wallet_address_creates_file** (tests.test_wallet_api) → FAILED
+  ```
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_address_creates_fi0/keys/solana_keypair.json'
+tmp_path = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_address_creates_fi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b143d8af410>
+
+    def test_wallet_address_creates_file(tmp_path, monkeypatch):
+        # isoliertes keys-Verzeichnis
+        keys_dir = tmp_path / "keys"
+        monkeypatch.setattr("backend.services.keypair_store.KEYS_DIR", keys_dir, raising=False)
+        monkeypatch.setattr("backend.services.keypair_store.KEYFILE", keys_dir / "solana_keypair.json", raising=False)
+        c = client()
+>       r = c.get("/api/v1/wallet/address")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_wallet_api.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:479: in get
+    return super().get(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1053: in get
+    return self.request(
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:291: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:222: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2476: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:967: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../backend/api/wallet.py:26: in address
+    pub, prv = get_or_create_keypair()  # create if missing
+               ^^^^^^^^^^^^^^^^^^^^^^^
+../backend/services/keypair_store.py:37: in get_or_create_keypair
+    KEYFILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+/usr/lib/python3.12/pathlib.py:1049: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_address_creates_fi0/keys/solana_keypair.json')
+mode = 'w', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_address_creates_fi0/keys/solana_keypair.json'
+
+/usr/lib/python3.12/pathlib.py:1015: FileNotFoundError
+```
+- **test_wallet_health_ok** (tests.test_wallet_api) → PASSED
+- **test_wallet_balance_without_solana** (tests.test_wallet_api) → PASSED
+- **test_wallet_balance_with_mock** (tests.test_wallet_api) → FAILED
+  ```
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_balance_with_mock0/keys/solana_keypair.json'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b143b8cae40>
+tmp_path = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_balance_with_mock0')
+
+    def test_wallet_balance_with_mock(monkeypatch, tmp_path):
+        import backend.api.wallet as wallet
+        def fake_import_ok():
+            def get_balance(addr): return 1.2345
+            def request_airdrop(addr, sol): return {"signature":"SIG", "requested_sol":sol}
+            return get_balance, request_airdrop, None
+        # Keypair Pfade mocken, damit address-Default funktioniert
+        keys_dir = tmp_path / "keys"
+        monkeypatch.setattr("backend.services.keypair_store.KEYS_DIR", keys_dir, raising=False)
+        monkeypatch.setattr("backend.services.keypair_store.KEYFILE", keys_dir / "solana_keypair.json", raising=False)
+        # Erst Adresse erzeugen
+        c = client()
+>       c.get("/api/v1/wallet/address")
+
+tests/test_wallet_api.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:479: in get
+    return super().get(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1053: in get
+    return self.request(
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:291: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:222: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2476: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:967: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../backend/api/wallet.py:26: in address
+    pub, prv = get_or_create_keypair()  # create if missing
+               ^^^^^^^^^^^^^^^^^^^^^^^
+../backend/services/keypair_store.py:37: in get_or_create_keypair
+    KEYFILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+/usr/lib/python3.12/pathlib.py:1049: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_balance_with_mock0/keys/solana_keypair.json')
+mode = 'w', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_balance_with_mock0/keys/solana_keypair.json'
+
+/usr/lib/python3.12/pathlib.py:1015: FileNotFoundError
+```
+- **test_wallet_airdrop_with_mock** (tests.test_wallet_api) → FAILED
+  ```
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_with_mock0/keys/solana_keypair.json'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b143b8c8830>
+tmp_path = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_with_mock0')
+
+    def test_wallet_airdrop_with_mock(monkeypatch, tmp_path):
+        import backend.api.wallet as wallet
+        def fake_import_ok():
+            def get_balance(addr): return 0.0
+            def request_airdrop(addr, sol): return {"signature":"S1GNEr", "requested_sol":sol}
+            return get_balance, request_airdrop, None
+        keys_dir = tmp_path / "keys"
+        monkeypatch.setattr("backend.services.keypair_store.KEYS_DIR", keys_dir, raising=False)
+        monkeypatch.setattr("backend.services.keypair_store.KEYFILE", keys_dir / "solana_keypair.json", raising=False)
+        c = client()
+>       c.get("/api/v1/wallet/address")
+
+tests/test_wallet_api.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:479: in get
+    return super().get(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1053: in get
+    return self.request(
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:291: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:222: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2476: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:967: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../backend/api/wallet.py:26: in address
+    pub, prv = get_or_create_keypair()  # create if missing
+               ^^^^^^^^^^^^^^^^^^^^^^^
+../backend/services/keypair_store.py:37: in get_or_create_keypair
+    KEYFILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+/usr/lib/python3.12/pathlib.py:1049: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_with_mock0/keys/solana_keypair.json')
+mode = 'w', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_with_mock0/keys/solana_keypair.json'
+
+/usr/lib/python3.12/pathlib.py:1015: FileNotFoundError
+```
+- **test_wallet_airdrop_rate_limited** (tests.test_wallet_api) → FAILED
+  ```
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_rate_limit0/keys/solana_keypair.json'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b143af5ec00>
+tmp_path = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_rate_limit0')
+
+    def test_wallet_airdrop_rate_limited(monkeypatch, tmp_path):
+        import backend.api.wallet as wallet
+        def fake_import_ok():
+            def get_balance(addr): return 0.0
+            def request_airdrop(addr, sol): raise RuntimeError("Too Many Requests")
+            return get_balance, request_airdrop, None
+        keys_dir = tmp_path / "keys"
+        monkeypatch.setattr("backend.services.keypair_store.KEYS_DIR", keys_dir, raising=False)
+        monkeypatch.setattr("backend.services.keypair_store.KEYFILE", keys_dir / "solana_keypair.json", raising=False)
+        c = client()
+>       c.get("/api/v1/wallet/address")
+
+tests/test_wallet_api.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:479: in get
+    return super().get(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1053: in get
+    return self.request(
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:291: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:222: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2476: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:967: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../backend/api/wallet.py:26: in address
+    pub, prv = get_or_create_keypair()  # create if missing
+               ^^^^^^^^^^^^^^^^^^^^^^^
+../backend/services/keypair_store.py:37: in get_or_create_keypair
+    KEYFILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+/usr/lib/python3.12/pathlib.py:1049: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_rate_limit0/keys/solana_keypair.json')
+mode = 'w', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_airdrop_rate_limit0/keys/solana_keypair.json'
+
+/usr/lib/python3.12/pathlib.py:1015: FileNotFoundError
+```
+- **test_wallet_balance_invalid_address** (tests.test_wallet_api) → PASSED
+- **test_agents_research_generate_creates_ideas** (tests.test_wallet_api) → PASSED
+- **test_agents_status_minimal** (tests.test_wallet_api) → PASSED
+- **test_wallet_address_persistence** (tests.test_wallet_api) → FAILED
+  ```
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_address_persistenc0/keys/solana_keypair.json'
+tmp_path = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_address_persistenc0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b143af718b0>
+
+    def test_wallet_address_persistence(tmp_path, monkeypatch):
+        keys_dir = tmp_path / "keys"
+        monkeypatch.setattr("backend.services.keypair_store.KEYS_DIR", keys_dir, raising=False)
+        monkeypatch.setattr("backend.services.keypair_store.KEYFILE", keys_dir / "solana_keypair.json", raising=False)
+        c = client()
+>       r1 = c.get("/api/v1/wallet/address").json()["public_key"]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_wallet_api.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:479: in get
+    return super().get(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1053: in get
+    return self.request(
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:291: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../.venv/lib/python3.12/site-packages/anyio/from_thread.py:222: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/cors.py:85: in __call__
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+../.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/to_thread.py:56: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2476: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+../.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:967: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+../backend/api/wallet.py:26: in address
+    pub, prv = get_or_create_keypair()  # create if missing
+               ^^^^^^^^^^^^^^^^^^^^^^^
+../backend/services/keypair_store.py:37: in get_or_create_keypair
+    KEYFILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+/usr/lib/python3.12/pathlib.py:1049: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-bicco/pytest-0/test_wallet_address_persistenc0/keys/solana_keypair.json')
+mode = 'w', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-bicco/pytest-0/test_wallet_address_persistenc0/keys/solana_keypair.json'
+
+/usr/lib/python3.12/pathlib.py:1015: FileNotFoundError
+```
