@@ -70,3 +70,63 @@ def wallet_health():
     if err is not None:
         return {"module":"wallet","solana_deps":f"missing ({err})","ts":time.time()}
     return {"module":"wallet","solana_deps":"ok","ts":time.time()}
+
+@router.get("/network")
+def network_status():
+    """Get current network information"""
+    from backend.core.config import SOLANA_RPC
+    network = "devnet" if "devnet" in SOLANA_RPC else "mainnet" if "mainnet" in SOLANA_RPC else "custom"
+    return {
+        "network": network,
+        "rpc_url": SOLANA_RPC,
+        "is_devnet": network == "devnet",
+        "is_mainnet": network == "mainnet",
+        "airdrop_available": network == "devnet",
+        "ts": time.time()
+    }
+
+@router.get("/status")
+def wallet_status():
+    """Get comprehensive wallet status"""
+    from backend.core.config import SOLANA_RPC
+
+    # Get network info
+    network = "devnet" if "devnet" in SOLANA_RPC else "mainnet" if "mainnet" in SOLANA_RPC else "custom"
+
+    # Get address
+    address_info = {"address": None, "error": None}
+    get_or_create_keypair, kerr = _import_keypair()
+    if kerr is None:
+        try:
+            pub, _ = get_or_create_keypair()
+            address_info["address"] = pub
+        except Exception as e:
+            address_info["error"] = str(e)
+    else:
+        address_info["error"] = str(kerr)
+
+    # Get balance if address available
+    balance_info = {"balance_sol": None, "error": None}
+    if address_info["address"]:
+        get_balance, _, berr = _import_solana_services()
+        if berr is None:
+            try:
+                bal = get_balance(address_info["address"])
+                balance_info["balance_sol"] = bal
+            except Exception as e:
+                balance_info["error"] = str(e)
+        else:
+            balance_info["error"] = str(berr)
+
+    return {
+        "network": network,
+        "rpc_url": SOLANA_RPC,
+        "is_devnet": network == "devnet",
+        "is_mainnet": network == "mainnet",
+        "airdrop_available": network == "devnet",
+        "address": address_info["address"],
+        "balance_sol": balance_info["balance_sol"],
+        "address_error": address_info["error"],
+        "balance_error": balance_info["error"],
+        "ts": time.time()
+    }

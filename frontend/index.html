@@ -44,6 +44,9 @@
     thead th{background:#0e1324;color:#c9d2e3;text-transform:uppercase;font-size:12px;letter-spacing:.03em}
     .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:#0d1122;font-size:12px;color:#c3c9d5}
     .pnl-pos{color:#7ef7b1} .pnl-neg{color:#ff9aa0}
+    .chip.devnet{background:#3b82f6;color:#fff}
+    .chip.mainnet{background:#ef4444;color:#fff}
+    .chip.custom{background:#f59e0b;color:#fff}
     .risk-inline{display:flex;align-items:center;gap:8px}
     .risk-inline input[type=range]{width:140px}
     .actions-inline{display:flex;gap:6px;flex-wrap:wrap}
@@ -67,6 +70,15 @@
     .side-nav-sublist .side-nav-link:hover,.side-nav-sublist .side-nav-link:focus{border-color:#4c51bf;background:rgba(76,81,191,.12)}
     .side-nav-link.is-active{border-color:#6366f1;background:linear-gradient(180deg,#1f2350,#161a38)}
     .side-nav-log{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:#0d1122;border:1px solid var(--border);border-radius:12px;padding:10px;min-height:72px;max-height:160px;overflow:auto;color:#cfe1ff}
+    .reports-list{max-height:200px;overflow:auto;}
+    .report-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:#0f1220;}
+    .report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+    .report-status{padding:2px 6px;border-radius:999px;font-size:10px;}
+    .report-status.success{background:#10b981;color:#fff;}
+    .report-status.warning{background:#f59e0b;color:#fff;}
+    .report-meta{font-size:11px;color:#9aa3b2;margin-bottom:6px;}
+    .report-actions{display:flex;gap:4px;flex-wrap:wrap;}
+    .report-actions .btn-ghost{font-size:11px;padding:4px 6px;}
     @media(max-width:1220px){.side-nav{position:relative;top:auto;right:auto;width:100%;box-shadow:none;margin-bottom:18px}}
   </style>
 </head>
@@ -84,18 +96,28 @@
       <ul class="side-nav-list">
         <li class="side-nav-item"><a class="side-nav-link" href="#first">First</a></li>
         <li class="side-nav-item"><a class="side-nav-link" href="#second">Second</a></li>
-        <li class="side-nav-item"><a class="side-nav-link" href="#third">Third</a></li>
+        <li class="side-nav-item"><a class="side-nav-link" href="#reports">Reports</a></li>
         <li class="side-nav-item has-sub">
           <a class="side-nav-link" href="#test">Test</a>
           <ul class="side-nav-sublist">
             <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/balance?address=So1anaEXAMPLEaddre55...............1234">Wallet-Balance-Test</a></li>
             <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/agents/research/generate" data-body='{"time_value":15,"time_unit":"minutes","risk_pref":3,"live":false}'>Research-Agent-Test</a></li>
             <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/trades/recent">Trades-Historie-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/tests/run" data-test-type="bundle">Bundle-Funktionstest</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/tests/bundle" data-test-type="bundle">Bundle-Funktionstest</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/status" data-test-type="wallet">Wallet-Status-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/network" data-test-type="wallet">Wallet-Netzwerk-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/health" data-test-type="wallet">Wallet-Health-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/wallet/airdrop" data-body='{"sol":0.01}' data-test-type="wallet">Wallet-Airdrop-Test</a></li>
           </ul>
         </li>
       </ul>
       <div id="testNavResult" class="side-nav-log">Bereit für Tests. Wähle einen Link unter „Test“.</div>
+      <div id="reports-section" class="side-nav-reports" style="display:none;">
+        <div class="side-nav-title">Test Reports</div>
+        <div id="reports-list" class="reports-list">
+          <div class="sub">Lade Reports...</div>
+        </div>
+      </div>
     </nav>
 
     <div class="grid g-3">
@@ -116,13 +138,36 @@
 
       <section class="card wallet">
         <div class="title">Solana Wallet</div>
-        <div><span class="chip">Adresse</span> <span class="mono">So1anaEXAMPLEaddre55...............1234</span></div>
-        <div style="margin-top:8px"><span class="chip">Kontostand</span> <strong class="mono" id="balance">â€”</strong></div>
+
+        <!-- Network Status -->
+        <div style="margin-bottom:12px">
+          <span class="chip" id="networkChip">Netzwerk: <span id="networkStatus">Lade...</span></span>
+          <span class="chip" id="airdropChip" style="display:none">Airdrop verfügbar</span>
+        </div>
+
+        <!-- Address -->
+        <div style="margin-bottom:8px">
+          <span class="chip">Adresse</span>
+          <span class="mono" id="walletAddress">Lade...</span>
+        </div>
+
+        <!-- Balance -->
+        <div style="margin-bottom:8px">
+          <span class="chip">Kontostand</span>
+          <strong class="mono" id="balance">â€”</strong>
+        </div>
+
+        <!-- Wallet Actions -->
         <div class="toolbar">
           <button class="btn" id="setAddress">Adresse setzen</button>
-          <button class="btn" id="refreshBalance" title="Design-Phase: ohne echte RPC">Kontostand abrufen</button>
+          <button class="btn" id="refreshBalance">Kontostand abrufen</button>
+          <button class="btn" id="requestAirdrop" style="display:none">Airdrop anfragen (0.2 SOL)</button>
           <button class="btn" id="btnGenerateStrategies" title="Trigger: Analyse-Agent">Strategien generieren</button>
         </div>
+
+        <!-- Status Messages -->
+        <div id="walletStatus" class="sub" style="margin-top:8px; display:none;"></div>
+
         <p class="sub">Hinweis: Buttons sind im Design aktiv; einige Aktionen rufen die API auf (dev/modus).</p>
       </section>
     </div>
@@ -761,18 +806,106 @@
         console.warn('Label fix failed', e);
       }
 
+      // Enhanced wallet functionality
+      async function loadWalletStatus() {
+        const addressEl = document.getElementById('walletAddress');
+        const balanceEl = document.getElementById('balance');
+        const networkEl = document.getElementById('networkStatus');
+        const networkChip = document.getElementById('networkChip');
+        const airdropChip = document.getElementById('airdropChip');
+        const airdropBtn = document.getElementById('requestAirdrop');
+        const statusEl = document.getElementById('walletStatus');
+
+        try {
+          const res = await fetch('/api/v1/wallet/status');
+          if (!res.ok) throw new Error('HTTP '+res.status);
+          const data = await res.json();
+
+          // Update network status
+          networkEl.textContent = data.network.toUpperCase();
+          networkChip.className = `chip ${data.is_devnet ? 'devnet' : data.is_mainnet ? 'mainnet' : 'custom'}`;
+
+          // Show/hide airdrop chip and button
+          if (data.airdrop_available) {
+            airdropChip.style.display = 'inline-flex';
+            airdropBtn.style.display = 'inline-flex';
+          } else {
+            airdropChip.style.display = 'none';
+            airdropBtn.style.display = 'none';
+          }
+
+          // Update address
+          if (data.address) {
+            addressEl.textContent = data.address;
+            store.addr = data.address;
+          } else if (data.address_error) {
+            addressEl.textContent = 'Fehler: ' + data.address_error;
+          } else {
+            addressEl.textContent = 'Nicht verfügbar';
+          }
+
+          // Update balance
+          if (data.balance_sol !== null) {
+            balanceEl.textContent = `${Number(data.balance_sol).toFixed(4)} SOL`;
+          } else if (data.balance_error) {
+            balanceEl.textContent = 'Fehler: ' + data.balance_error;
+          } else {
+            balanceEl.textContent = '—';
+          }
+
+          // Show status message if there are errors
+          if (data.address_error || data.balance_error) {
+            let statusMsg = '';
+            if (data.address_error) statusMsg += 'Adresse-Fehler: ' + data.address_error;
+            if (data.balance_error) statusMsg += (statusMsg ? '; ' : '') + 'Balance-Fehler: ' + data.balance_error;
+            statusEl.textContent = statusMsg;
+            statusEl.style.display = 'block';
+          } else {
+            statusEl.style.display = 'none';
+          }
+
+        } catch (e) {
+          console.error('Wallet status error:', e);
+          addressEl.textContent = 'Fehler beim Laden';
+          balanceEl.textContent = 'Fehler';
+          networkEl.textContent = 'Unbekannt';
+          statusEl.textContent = 'Fehler beim Laden des Wallet-Status';
+          statusEl.style.display = 'block';
+        }
+      }
+
       const btn = document.getElementById('refreshBalance');
-      const bal = document.getElementById('balance');
-      if (btn && bal) {
-        btn.onclick = async () => {
+      if (btn) {
+        btn.onclick = loadWalletStatus;
+      }
+
+      // Airdrop functionality
+      const airdropBtn = document.getElementById('requestAirdrop');
+      if (airdropBtn) {
+        airdropBtn.onclick = async () => {
+          airdropBtn.disabled = true;
+          airdropBtn.textContent = 'Airdrop wird angefordert...';
+
           try {
-            const res = await fetch('/api/v1/wallet/balance');
+            const res = await fetch('/api/v1/wallet/airdrop', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sol: 0.2 })
+            });
+
             if (!res.ok) throw new Error('HTTP '+res.status);
             const data = await res.json();
-            bal.textContent = `${Number(data.balance_sol).toFixed(4)} SOL (API)`;
+
+            toast('Airdrop erfolgreich! Signatur: ' + (data.signature || 'N/A'));
+            // Refresh balance after airdrop
+            setTimeout(loadWalletStatus, 2000);
+
           } catch (e) {
-            bal.textContent = 'Fehler beim Abrufen';
-            console.error(e);
+            console.error('Airdrop error:', e);
+            toast('Airdrop fehlgeschlagen: ' + e.message);
+          } finally {
+            airdropBtn.disabled = false;
+            airdropBtn.textContent = 'Airdrop anfragen (0.2 SOL)';
           }
         };
       }
@@ -1109,10 +1242,404 @@
     if (ra){ ra.value = store.riskAnalysis; raV && (raV.textContent = ra.value+'/5'); ra.addEventListener('input', ()=>{ store.riskAnalysis = +ra.value; raV && (raV.textContent = ra.value+'/5'); }); }
   }
 
-  async function boot(){ wire(); await initAddress(); await refreshBalance(); }
+  async function boot(){
+    wire();
+    await initAddress();
+    await loadWalletStatus(); // Load comprehensive wallet status
+  }
   if (document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();
 // === /wiring ===
+</script>
+
+// Reports management system
+(function(){
+  const REPORTS_KEY = 'sepai.test.reports';
+  const MAX_REPORTS = 50; // Keep last 50 reports
+
+  function saveReport(reportData) {
+    try {
+      const reports = JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]');
+
+      // Add new report
+      reports.unshift({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        type: reportData.type || 'bundle',
+        summary: reportData.summary,
+        details: reportData.details,
+        fullReport: reportData.fullReport
+      });
+
+      // Keep only last MAX_REPORTS
+      if (reports.length > MAX_REPORTS) {
+        reports.splice(MAX_REPORTS);
+      }
+
+      localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+      return true;
+    } catch (e) {
+      console.error('Failed to save report:', e);
+      return false;
+    }
+  }
+
+  function getReports() {
+    try {
+      return JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]');
+    } catch (e) {
+      console.error('Failed to load reports:', e);
+      return [];
+    }
+  }
+
+  function deleteReport(reportId) {
+    try {
+      const reports = getReports();
+      const filtered = reports.filter(r => r.id !== reportId);
+      localStorage.setItem(REPORTS_KEY, JSON.stringify(filtered));
+      return true;
+    } catch (e) {
+      console.error('Failed to delete report:', e);
+      return false;
+    }
+  }
+
+  function formatReportText(results) {
+    let text = `BUNDLE-FUNKTIONSTEST REPORT\n`;
+    text += `==============================\n\n`;
+    text += `Zeitstempel: ${results.timestamp}\n`;
+    text += `Gesamt Tests: ${results.summary.total}\n`;
+    text += `Bestanden: ${results.summary.passed}\n`;
+    text += `Fehlgeschlagen: ${results.summary.failed}\n`;
+    text += `Fehler: ${results.summary.errors}\n\n`;
+
+    if (results.summary.failed > 0 || results.summary.errors > 0) {
+      text += `FEHLGESCHLAGENE TESTS:\n`;
+      text += `=====================\n\n`;
+
+      results.tests.forEach(test => {
+        if (!test.success) {
+          text += `Test: ${test.name}\n`;
+          text += `Endpoint: ${test.endpoint}\n`;
+          text += `Status: ${test.status || 'N/A'}\n`;
+          if (test.error) {
+            text += `Fehler: ${test.error}\n`;
+          }
+          text += `\n`;
+        }
+      });
+    }
+
+    text += `VOLLE DETAILS:\n`;
+    text += `=============\n\n`;
+
+    results.tests.forEach(test => {
+      text += `${test.success ? '✓' : '✗'} ${test.name}\n`;
+      text += `   Endpoint: ${test.endpoint}\n`;
+      text += `   Method: ${test.method}\n`;
+      text += `   Status: ${test.status || 'N/A'}\n`;
+      if (!test.success && test.error) {
+        text += `   Fehler: ${test.error}\n`;
+      }
+      text += `\n`;
+    });
+
+    return text;
+  }
+
+  function renderReportsList() {
+    const reports = getReports();
+    const reportsContainer = document.getElementById('reports-list');
+
+    if (!reportsContainer) return;
+
+    if (reports.length === 0) {
+      reportsContainer.innerHTML = '<div class="sub">Keine Reports vorhanden.</div>';
+      return;
+    }
+
+    const html = reports.map(report => {
+      const date = new Date(report.timestamp).toLocaleString('de-DE');
+      const status = report.summary.failed > 0 || report.summary.errors > 0 ? 'warning' : 'success';
+      const statusText = report.summary.failed > 0 || report.summary.errors > 0 ? 'Fehler' : 'OK';
+
+      return `
+        <div class="report-item" data-report-id="${report.id}">
+          <div class="report-header">
+            <strong>${report.type.toUpperCase()} Test</strong>
+            <span class="report-status ${status}">${statusText}</span>
+          </div>
+          <div class="report-meta">
+            ${date} • ${report.summary.passed}/${report.summary.total} bestanden
+          </div>
+          <div class="report-actions">
+            <button class="btn-ghost report-view" data-report-id="${report.id}">Anzeigen</button>
+            <button class="btn-ghost report-download" data-report-id="${report.id}">Download</button>
+            <button class="btn-ghost report-delete" data-report-id="${report.id}">Löschen</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    reportsContainer.innerHTML = html;
+
+    // Add event listeners
+    reportsContainer.addEventListener('click', function(e) {
+      const reportId = parseInt(e.target.getAttribute('data-report-id'));
+      if (!reportId) return;
+
+      if (e.target.classList.contains('report-view')) {
+        viewReport(reportId);
+      } else if (e.target.classList.contains('report-download')) {
+        downloadReport(reportId);
+      } else if (e.target.classList.contains('report-delete')) {
+        if (confirm('Report wirklich löschen?')) {
+          deleteReport(reportId);
+          renderReportsList();
+        }
+      }
+    });
+  }
+
+  function viewReport(reportId) {
+    const reports = getReports();
+    const report = reports.find(r => r.id === reportId);
+    if (!report) return;
+
+    const testLog = document.getElementById('testNavResult');
+    if (testLog) {
+      testLog.textContent = report.fullReport;
+    }
+  }
+
+  function downloadReport(reportId) {
+    const reports = getReports();
+    const report = reports.find(r => r.id === reportId);
+    if (!report) return;
+
+    const filename = `test-report-${report.type}-${report.id}.txt`;
+    const blob = new Blob([report.fullReport], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Expose functions globally
+  window.ReportsManager = {
+    saveReport,
+    getReports,
+    renderReportsList,
+    formatReportText
+  };
+})();
+
+<script>
+// Bundle-Funktionstest implementation
+(function(){
+  const API_BASE = '/api/v1';
+
+  async function runBundleTest() {
+    const results = {
+      timestamp: new Date().toISOString(),
+      tests: [],
+      summary: { total: 0, passed: 0, failed: 0, errors: 0 }
+    };
+
+    const testCases = [
+      // Wallet tests
+      { name: 'Wallet Address', method: 'GET', endpoint: `${API_BASE}/wallet/address`, expectStatus: 200 },
+      { name: 'Wallet Health', method: 'GET', endpoint: `${API_BASE}/wallet/health`, expectStatus: 200 },
+      { name: 'Wallet Balance', method: 'GET', endpoint: `${API_BASE}/wallet/balance`, expectStatus: [200, 422, 503] },
+
+      // Agent tests
+      { name: 'Agents Status', method: 'GET', endpoint: `${API_BASE}/agents/status`, expectStatus: 200 },
+      { name: 'Research Generate', method: 'POST', endpoint: `${API_BASE}/agents/research/generate`,
+        body: { time_value: 5, time_unit: 'minutes', risk_pref: 3, live: false }, expectStatus: 200 },
+
+      // Wallet tests
+      { name: 'Wallet Status', method: 'GET', endpoint: `${API_BASE}/wallet/status`, expectStatus: 200 },
+      { name: 'Wallet Network', method: 'GET', endpoint: `${API_BASE}/wallet/network`, expectStatus: 200 },
+      { name: 'Wallet Health', method: 'GET', endpoint: `${API_BASE}/wallet/health`, expectStatus: 200 },
+      { name: 'Wallet Address', method: 'GET', endpoint: `${API_BASE}/wallet/address`, expectStatus: 200 },
+      { name: 'Wallet Balance', method: 'GET', endpoint: `${API_BASE}/wallet/balance`, expectStatus: [200, 422, 503] },
+
+      // Data tests
+      { name: 'Ideas List', method: 'GET', endpoint: `${API_BASE}/ideas/`, expectStatus: 200 },
+      { name: 'Trades History', method: 'GET', endpoint: `${API_BASE}/trades/recent`, expectStatus: 200 },
+      { name: 'Strategies List', method: 'GET', endpoint: `${API_BASE}/strategies`, expectStatus: 200 },
+      { name: 'Releases List', method: 'GET', endpoint: `${API_BASE}/releases`, expectStatus: 200 },
+
+      // Additional wallet tests
+      { name: 'Wallet Airdrop (mock)', method: 'POST', endpoint: `${API_BASE}/wallet/airdrop`,
+        body: { sol: 0.01 }, expectStatus: [200, 404, 503] },
+    ];
+
+    for (const test of testCases) {
+      results.summary.total++;
+      const testResult = {
+        name: test.name,
+        endpoint: test.endpoint,
+        method: test.method,
+        status: null,
+        success: false,
+        error: null,
+        response: null
+      };
+
+      try {
+        const options = {
+          method: test.method,
+          headers: {}
+        };
+
+        if (test.body) {
+          options.headers['Content-Type'] = 'application/json';
+          options.body = JSON.stringify(test.body);
+        }
+
+        const response = await fetch(test.endpoint, options);
+        testResult.status = response.status;
+
+        let responseData;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          responseData = await response.json();
+        } else {
+          responseData = await response.text();
+        }
+        testResult.response = responseData;
+
+        // Check if status is expected
+        const expectedStatuses = Array.isArray(test.expectStatus) ? test.expectStatus : [test.expectStatus];
+        if (expectedStatuses.includes(response.status)) {
+          testResult.success = true;
+          results.summary.passed++;
+        } else {
+          testResult.success = false;
+          results.summary.failed++;
+          testResult.error = `Unexpected status: ${response.status}, expected: ${expectedStatuses.join(' or ')}`;
+        }
+
+      } catch (error) {
+        testResult.success = false;
+        testResult.error = error.message;
+        results.summary.errors++;
+      }
+
+      results.tests.push(testResult);
+    }
+
+    return results;
+  }
+
+  // Handle navigation between sections
+  function showTestSection() {
+    document.getElementById('testNavResult').style.display = 'block';
+    document.getElementById('reports-section').style.display = 'none';
+    document.querySelectorAll('.side-nav-link').forEach(l => l.classList.remove('is-active'));
+  }
+
+  function showReportsSection() {
+    document.getElementById('testNavResult').style.display = 'none';
+    document.getElementById('reports-section').style.display = 'block';
+    document.querySelectorAll('.side-nav-link').forEach(l => l.classList.remove('is-active'));
+    document.querySelector('.side-nav-link[href="#reports"]').classList.add('is-active');
+    window.ReportsManager.renderReportsList();
+  }
+
+  // Handle main navigation
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.side-nav-link');
+    if (link) {
+      const href = link.getAttribute('href');
+      if (href === '#reports') {
+        e.preventDefault();
+        showReportsSection();
+      } else if (href === '#test') {
+        e.preventDefault();
+        showTestSection();
+      }
+    }
+  });
+
+  // Intercept the bundle test link
+  document.addEventListener('click', async function(e) {
+    const link = e.target.closest('.test-link[data-test-type="bundle"]');
+    if (link) {
+      e.preventDefault();
+
+      const testLog = document.getElementById('testNavResult');
+      if (!testLog) return;
+
+      // Mark as active
+      document.querySelectorAll('.test-link').forEach(it => it.classList.remove('is-active'));
+      link.classList.add('is-active');
+
+      testLog.textContent = 'Starte Bundle-Funktionstest…';
+
+      try {
+        const results = await runBundleTest();
+
+        // Format results
+        let output = `Bundle-Funktionstest abgeschlossen: ${results.summary.passed}/${results.summary.total} bestanden\n\n`;
+
+        if (results.summary.failed > 0 || results.summary.errors > 0) {
+          output += `Fehlgeschlagen: ${results.summary.failed}, Fehler: ${results.summary.errors}\n\n`;
+        }
+
+        output += 'Details:\n';
+        results.tests.forEach(test => {
+          const icon = test.success ? '✓' : '✗';
+          output += `${icon} ${test.name}: ${test.success ? 'OK' : 'FEHLER'}\n`;
+          if (!test.success && test.error) {
+            output += `   Fehler: ${test.error}\n`;
+          }
+          if (test.status) {
+            output += `   Status: ${test.status}\n`;
+          }
+          output += '\n';
+        });
+
+        testLog.textContent = output;
+
+        // Save report
+        const fullReportText = window.ReportsManager.formatReportText(results);
+        const reportSaved = window.ReportsManager.saveReport({
+          type: 'bundle',
+          summary: results.summary,
+          details: results.tests,
+          fullReport: fullReportText
+        });
+
+        if (reportSaved) {
+          output += '\nReport wurde gespeichert und ist im Reports-Menü verfügbar.';
+          testLog.textContent = output;
+          // Refresh reports list
+          window.ReportsManager.renderReportsList();
+        } else {
+          output += '\nWarnung: Report konnte nicht gespeichert werden.';
+          testLog.textContent = output;
+        }
+
+      } catch (error) {
+        testLog.textContent = `Bundle-Test fehlgeschlagen: ${error.message}`;
+        console.error('Bundle test error:', error);
+      }
+    }
+  });
+
+  // Initialize reports on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    window.ReportsManager.renderReportsList();
+  });
+})();
 </script>
 </body>
 </html>
