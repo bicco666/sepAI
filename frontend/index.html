@@ -91,6 +91,7 @@
             <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/balance?address=So1anaEXAMPLEaddre55...............1234">Wallet-Balance-Test</a></li>
             <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/agents/research/generate" data-body='{"time_value":15,"time_unit":"minutes","risk_pref":3,"live":false}'>Research-Agent-Test</a></li>
             <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/trades/recent">Trades-Historie-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/tests/run" data-test-type="bundle">Bundle-Funktionstest</a></li>
           </ul>
         </li>
       </ul>
@@ -673,6 +674,7 @@
         if (!endpoint) return;
         const method = (link.dataset.method || 'GET').toUpperCase();
         const body = link.dataset.body || '';
+        const testType = (link.dataset.testType || '').toLowerCase();
         const headers = {};
         if (body && method !== 'GET') {
           headers['Content-Type'] = 'application/json';
@@ -693,7 +695,44 @@
           } catch (err) {
             parsed = raw;
           }
-          testLog.textContent = `Status ${response.status}: ${pretty(parsed)}`;
+          let message = `Status ${response.status}: ${pretty(parsed)}`;
+          if (testType === 'bundle' && parsed && typeof parsed === 'object') {
+            const totals = parsed.totals || parsed.summary || (parsed.result && parsed.result.totals);
+            const summaryParts = [];
+            if (totals) {
+              const pick = (...values) => values.find((value) => value !== undefined && value !== null);
+              const fallback = (value, def = 0) => (value === undefined || value === null ? def : value);
+              const total = fallback(pick(totals.total, totals.tests, totals.count), 0);
+              const passed = fallback(pick(totals.passed, totals.success, totals.ok), 0);
+              const failuresBase = fallback(pick(totals.failures, totals.failed), 0);
+              const errors = fallback(totals.errors, 0);
+              const failures = failuresBase + errors;
+              const skipped = fallback(pick(totals.skipped, totals.xfailed, totals.xpassed), 0);
+              summaryParts.push(`${passed}/${total} passed`);
+              if (failures) summaryParts.push(`failures: ${failures}`);
+              if (skipped) summaryParts.push(`skipped: ${skipped}`);
+            }
+            const exitCode = parsed.exit_code !== undefined && parsed.exit_code !== null ? parsed.exit_code : parsed.exitCode;
+            if (exitCode !== undefined && exitCode !== null) {
+              summaryParts.push(`exit=${exitCode}`);
+            }
+            if (summaryParts.length) {
+              summaryParts.unshift(`status=${response.status}`);
+              message = summaryParts.join(" | ");
+              const stdout = parsed.stdout_tail || parsed.stdout;
+              const stderr = parsed.stderr_tail || parsed.stderr;
+              if (stdout) {
+                message += `\nstdout:\n${stdout}`;
+              }
+              if (stderr) {
+                message += `\nstderr:\n${stderr}`;
+              }
+              if (!stdout && !stderr) {
+                message += `\n${pretty(parsed)}`;
+              }
+            }
+          }
+          testLog.textContent = message;
         } catch (error) {
           testLog.textContent = `Fehler bei ${link.textContent.trim()}: ${(error && error.message) || error}`;
           console.error(error);
@@ -1077,4 +1116,3 @@
 </script>
 </body>
 </html>
-
