@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +30,10 @@ app.include_router(audit.router, prefix="/api/v1/audit")
 @app.get("/health")
 def health_check():
     return {"status": "ok", "timestamp": time.time()}
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok", "ts": datetime.utcnow().isoformat()}
 
 # Mount static files LAST (fallback for everything else)
 app.mount("/", StaticFiles(directory=".", html=True), name="static")

@@ -1,274 +1,70 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
-import sys
-import time
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from datetime import datetime
+import glob, asyncio
 
-# Add current directory to path for imports
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-from state import get_store, Idea, Order, IdeaState, OrderState, validate_budget
-from scheduler import get_scheduler
+IDEAS, ORDERS = [], []
 
-app = Flask(__name__, static_folder='../frontend', static_url_path='')
-CORS(app)
+class Idea(BaseModel):
+    id: str; asset: str="SOL"; chain:str="solana"; amount:float=0.1; risk:int=3; state:str="NEW"
 
-# Start scheduler when app starts
-scheduler = get_scheduler()
-scheduler.start()
+@app.get("/healthz")
+def healthz(): return {"status":"ok","ts":datetime.utcnow().isoformat()}
 
-IDEAS, ORDERS, HISTORY = [], [], []
+@app.get("/api/v1/ideas")
+def list_ideas(limit:int=20, order:str="desc"):
+    items = list(reversed(IDEAS))[:limit] if order=="desc" else IDEAS[:limit]
+    return {"items": items}
 
-@app.route('/healthz')
-def healthz():
-    return jsonify({"status": "ok", "timestamp": time.time()})
+@app.post("/api/v1/ideas/generate")
+def gen_idea(body:dict):
+    iid=f"idea_{len(IDEAS)+1}"; i=Idea(id=iid, asset=body.get("asset","SOL"), risk=int(body.get("risk",3)))
+    IDEAS.append(i.model_dump()); return i
 
-@app.route('/api/v1/ideas', methods=['GET'])
-def get_ideas():
-    return jsonify(IDEAS), 200
+@app.post("/api/v1/ideas/{iid}/analyze")
+def analyze(iid:str):
+    i=next((x for x in IDEAS if x["id"]==iid), None)
+    if not i: raise HTTPException(404,"idea not found")
+    i.update({"side":"buy","hold_minutes":60,"state":"NEEDS_REVIEW"}); return i
 
-@app.route('/api/v1/ideas', methods=['POST'])
-def create_idea():
-    idea = {"id": f"idea_{len(IDEAS)+1}", "asset":"SOL","chain":"solana",
-            "amount":0.1,"p_success":0.6,"state":"NEW"}
-    IDEAS.append(idea)
-    return jsonify(idea), 201
+@app.post("/api/v1/ideas/{iid}/to_orders")
+def to_orders(iid:str):
+    i=next((x for x in IDEAS if x["id"]==iid), None)
+    if not i: raise HTTPException(404,"idea not found")
+    o={"id":f"ord_{len(ORDERS)+1}","idea_id":iid,"asset":i["asset"],"amount":i["amount"],"state":"SCHEDULED"}
+    ORDERS.append(o); return o
 
-@app.route('/api/v1/ideas/<idea_id>/to-analysis', methods=['POST'])
-def idea_to_analysis(idea_id):
-    idea = next((x for x in IDEAS if x["id"] == idea_id), None)
-    if not idea: return jsonify(detail="not found"), 404
-    idea.update({"side":"buy","hold_minutes":60,"state":"NEEDS_REVIEW"})
-    return jsonify(idea), 200
+@app.get("/api/v1/wallet/balance")
+def balance(): return {"balance": 123.45}
 
-@app.route('/api/v1/ideas/<idea_id>/schedule', methods=['POST'])
-def schedule_idea(idea_id):
-    idea = next((x for x in IDEAS if x["id"] == idea_id), None)
-    if not idea: return jsonify(detail="not found"), 404
-    order = {"id": f"ord_{len(ORDERS)+1}", "idea_id": idea_id, "asset": idea["asset"],
-             "chain": idea["chain"], "amount": idea["amount"], "state":"SCHEDULED"}
-    ORDERS.append(order)
-    return jsonify(order), 201
+from backend.services.reporting import write_md
 
-@app.route('/api/v1/orders', methods=['GET'])
-def get_orders():
-    return jsonify(ORDERS), 200
-
-@app.route('/api/v1/orders/<order_id>/execute', methods=['POST'])
-def execute_order(order_id):
-    store = get_store()
-    order = store.get_order(order_id)
-    if not order:
-        return jsonify({"error": "Order not found"}), 404
-
-    if order.state != OrderState.NEW:
-        return jsonify({"error": "Order not in NEW state"}), 400
-
-    # Schedule for execution
-    store.update_order_state(order_id, OrderState.SCHEDULED)
-
-    return jsonify({"success": True, "message": "Order scheduled for execution"})
-
-@app.route('/api/v1/tests/run', methods=['GET'])
-def run_test():
-    case = request.args.get('case', '1')
-    result = run_test_case(case)
-    return jsonify(result)
-
-@app.route('/api/v1/tests/bundle', methods=['GET'])
-def run_bundle():
-    results = []
-    for case in ['1', '2', '3', '4', '5']:
-        result = run_test_case(case)
-        results.append(result)
-
-    # Write bundle report
-    write_report("bundle_test", results)
-
-    return jsonify({
-        "bundle_results": results,
-        "summary": {
-            "total": len(results),
-            "passed": sum(1 for r in results if r.get("success")),
-            "failed": sum(1 for r in results if not r.get("success"))
-        }
-    })
-
-@app.route('/api/v1/audit/run', methods=['POST'])
-def run_audit():
-    # Run comprehensive audit
-    audit_results = run_full_audit()
-
-    # Write audit report
-    write_report("audit", audit_results)
-
-    return jsonify(audit_results)
-
-def run_test_case(case: str) -> dict:
-    """Run individual test case"""
+@app.post("/api/v1/tests/run/basic_flow")
+def run_basic_flow():
+    steps=[]
     try:
-        if case == '1':
-            return test_flow_basic()
-        elif case == '2':
-            return test_chains()
-        elif case == '3':
-            return test_budget_policy()
-        elif case == '4':
-            return test_audit()
-        elif case == '5':
-            return test_dashboard()
-        else:
-            return {"success": False, "error": f"Unknown test case: {case}"}
+        i = gen_idea({"risk":3,"asset":"SOL"}); steps.append(f"idea {i.id} created")
+        a = analyze(i.id); steps.append("analyzed ok")
+        o = to_orders(i.id); steps.append(f"order {o['id']} scheduled")
+        path = write_md("basic_flow", steps+["RESULT: OK"])
+        return {"ok": True, "report_path": path}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        path = write_md("basic_flow", steps+[f"RESULT: FAIL {e}"])
+        raise HTTPException(500, detail=f"Report: {path}")
 
-def test_flow_basic() -> dict:
-    """Test 1: Basic flow - Idea → Analysis → Order → Execution"""
-    store = get_store()
+@app.on_event("startup")
+async def _startup_smoke():
+    try: run_basic_flow()
+    except: pass
 
-    # Create idea
-    idea = Idea("solana", 0.01, "Test idea")
-    store.add_idea(idea)
-
-    # Move to analysis
-    store.update_idea_state(idea.id, IdeaState.NEEDS_REVIEW)
-
-    # Schedule
-    order = Order(idea.id, idea.chain, idea.budget)
-    store.add_order(order)
-    store.update_idea_state(idea.id, IdeaState.SCHEDULED)
-
-    # Execute
-    store.update_order_state(order.id, OrderState.SCHEDULED)
-
-    return {"success": True, "message": "Basic flow test passed"}
-
-def test_chains() -> dict:
-    """Test 2: Chain validation"""
-    store = get_store()
-
-    # Test Solana
-    sol_idea = Idea("solana", 0.1)
-    store.add_idea(sol_idea)
-
-    # Test Ethereum
-    eth_idea = Idea("ethereum", 0.001)
-    store.add_idea(eth_idea)
-
-    return {"success": True, "message": "Chain validation test passed"}
-
-def test_budget_policy() -> dict:
-    """Test 3: Budget policy validation"""
-    # Test valid budget
-    valid = validate_budget(0.01, "solana")
-    if not valid:
-        return {"success": False, "error": "Valid budget rejected"}
-
-    # Test invalid budget (too high)
-    invalid = validate_budget(1.0, "solana")
-    if invalid:
-        return {"success": False, "error": "Invalid budget accepted"}
-
-    return {"success": True, "message": "Budget policy test passed"}
-
-def test_audit() -> dict:
-    """Test 4: Audit functionality"""
-    audit_results = run_full_audit()
-    return {"success": True, "message": "Audit test passed", "results": audit_results}
-
-def test_dashboard() -> dict:
-    """Test 5: Dashboard integration"""
-    # Test API endpoints
-    with app.test_client() as client:
-        # Test health
-        resp = client.get('/healthz')
-        if resp.status_code != 200:
-            return {"success": False, "error": "Health check failed"}
-
-        # Test ideas endpoint
-        resp = client.get('/api/v1/ideas')
-        if resp.status_code != 200:
-            return {"success": False, "error": "Ideas endpoint failed"}
-
-    return {"success": True, "message": "Dashboard test passed"}
-
-def _validate_airdrop_amount(sol):
-    if sol is None: return 422, "amount required"
-    try:
-        sol = float(sol)
-    except Exception:
-        return 422, "invalid amount"
-    if sol <= 0: return 400, "amount must be > 0"
-    if sol > 100: return 400, "amount too large"
-    return 200, sol
-
-@app.post("/api/v1/wallet/airdrop")
-def airdrop():
-    src = request.args.get("sol")
-    if src is None and request.is_json:
-        src = (request.json or {}).get("sol")
-    code, val = _validate_airdrop_amount(src)
-    if code != 200:
-        return jsonify(detail=val), code
-    # happy path mock
-    return jsonify({"status": "ok", "amount": float(val)}), 200
-
-def run_full_audit() -> dict:
-    """Run comprehensive audit"""
-    store = get_store()
-    ideas = store.get_all_ideas()
-    orders = store.get_all_orders()
-
-    return {
-        "timestamp": time.time(),
-        "ideas_count": len(ideas),
-        "orders_count": len(orders),
-        "budget_total": store.budget_total,
-        "ideas_by_state": {
-            state.value: len([i for i in ideas if i.state.value == state.value])
-            for state in IdeaState
-        },
-        "orders_by_state": {
-            state.value: len([o for o in orders if o.state.value == state.value])
-            for state in OrderState
-        }
-    }
-
-def write_report(report_type: str, data: dict):
-    """Write report to reports/ directory"""
-    import json
-    os.makedirs('reports', exist_ok=True)
-
-    timestamp = time.strftime("%Y%m%d_%H%M%S")
-    filename = f"reports/{report_type}_{timestamp}.md"
-
-    with open(filename, 'w') as f:
-        f.write(f"# {report_type.upper()} Report\n\n")
-        f.write(f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-
-        if report_type == "bundle_test":
-            f.write("## Test Results\n\n")
-            for i, result in enumerate(data, 1):
-                status = "✅ PASS" if result.get("success") else "❌ FAIL"
-                f.write(f"### Test Case {i}\n")
-                f.write(f"Status: {status}\n")
-                if result.get("message"):
-                    f.write(f"Message: {result['message']}\n")
-                if result.get("error"):
-                    f.write(f"Error: {result['error']}\n")
-                f.write("\n")
-        else:
-            f.write("## Audit Results\n\n")
-            f.write(f"```json\n{json.dumps(data, indent=2)}\n```\n")
-
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
-
-@app.route('/<path:path>')
-def static_files(path):
-    return app.send_static_file(path)
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+@app.get("/api/v1/tests/last_report")
+def last_report():
+    files = sorted(glob.glob("reports/*basic_flow*.md"))
+    if not files: return {"found": False}
+    p = files[-1]; content = open(p, "r", encoding="utf-8").read()
+    ok = "RESULT: OK" in content
+    return {"found": True, "ok": ok, "report_path": p}

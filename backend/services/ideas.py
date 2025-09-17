@@ -1,6 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from typing import List, Dict, Any
 import time, itertools, random
+
+class GenerateRequest(BaseModel):
+    risk: int = 3
+    asset: str = "SOL"
 
 router = APIRouter()
 _IDEAS: List[Dict[str, Any]] = []
@@ -32,11 +37,28 @@ def _synthesize_analysis(idea: Dict[str, Any]) -> Dict[str, Any]:
     return idea
 
 @router.post("/generate")
-def generate_ideas(limit: int = 3, risk: int = 3, minutes: int = 10):
+def generate_ideas(body: GenerateRequest):
+    risk = body.risk
+    asset = body.asset
     out = []
-    for _ in range(max(1, min(10, limit))):
-        idea = _synthesize_research(risk, minutes)
+    for _ in range(1):
+        idea = _synthesize_research(risk, 10)
+        idea['asset'] = asset  # override asset
         idea = _synthesize_analysis(idea)
         _IDEAS.append(idea)
         out.append(idea)
-    return {"count": len(out), "items": out}
+    return out[0]
+
+@router.post("/{iid}/analyze")
+def analyze(iid: str):
+    i = next((x for x in _IDEAS if x["id"] == iid), None)
+    if not i: raise HTTPException(404, "idea not found")
+    i.update({"side": "buy", "hold_minutes": 60, "state": "NEEDS_REVIEW"})
+    return i
+
+@router.post("/{iid}/to_orders")
+def to_orders(iid: str):
+    i = next((x for x in _IDEAS if x["id"] == iid), None)
+    if not i: raise HTTPException(404, "idea not found")
+    o = {"id": f"ord_{len(_IDEAS) + 1}", "idea_id": iid, "asset": i["asset"], "amount": i.get("amount", i["budget"]), "state": "SCHEDULED"}
+    return o
