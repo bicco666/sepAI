@@ -2,7 +2,8 @@ import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from backend.api import wallet, agents, ideas, strategies, trades, tests
+from backend.services import ideas, analysis as strategies, execution as trades, wallet, reporting as tests, audit
+from backend.api import agents
 
 app = FastAPI(title="Solana Trading Organisation API", version="0.1")
 
@@ -22,6 +23,7 @@ app.include_router(ideas.router, prefix="/api/v1/ideas")
 app.include_router(strategies.router, prefix="/api/v1/strategies")
 app.include_router(trades.router, prefix="/api/v1/trades")
 app.include_router(tests.router, prefix="/api/v1/tests")
+app.include_router(audit.router, prefix="/api/v1/audit")
 
 # Add a simple health check
 @app.get("/health")

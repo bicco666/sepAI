@@ -83,7 +83,14 @@
     .report-actions{display:flex;gap:4px;flex-wrap:wrap;}
     .report-actions .btn-ghost{font-size:11px;padding:4px 6px;}
     @media(max-width:1220px){.side-nav{position:relative;top:auto;right:auto;width:100%;box-shadow:none;margin-bottom:18px}}
-  </style>
+    .hidden { display: none; }
+    .bg-red-900\/40 { background-color: rgba(127, 29, 29, 0.4); }
+    .border { border: 1px solid; }
+    .border-red-600 { border-color: #dc2626; }
+    .text-red-200 { color: #fecaca; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .p-3 { padding: 0.75rem; }
+      </style>
 </head>
 <body>
   <div class="wrap">
@@ -93,6 +100,8 @@
   <div class="sub">Solana Trading Organisation • Design-Mockup (v0.6, UI-only)</div>
       </div>
     </header>
+
+    <div id="summary" class="hidden bg-red-900/40 border border-red-600 text-red-200 rounded-lg p-3"></div>
 
     <nav class="side-nav" aria-label="Schnellmenü">
       <div class="side-nav-title">Quick Tabs</div>

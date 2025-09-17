@@ -1,8 +1,14 @@
 from typing import Optional
 from tenacity import retry, stop_after_attempt, wait_exponential
+
+try:
+    from solders.pubkey import Pubkey as PublicKey
+    from solders import LAMPORTS_PER_SOL
+except ModuleNotFoundError:
+    from backend.thirdparty.solders import PublicKey, LAMPORTS_PER_SOL
+
 try:
     from solana.rpc.api import Client
-    from solders.pubkey import Pubkey as PublicKey
     _HAVE_SOLANA = True
 except Exception as e:
     print(f"Solana library not available: {e}")
@@ -36,7 +42,7 @@ def get_balance(address: str) -> float:
                 raise RateLimitError(err)
             raise RuntimeError(err)
         lamports = resp["result"]["value"]
-        return lamports / 1_000_000_000
+        return lamports / LAMPORTS_PER_SOL
     except Exception as e:
         # Fallback to mock balance
         import random
@@ -45,7 +51,7 @@ def get_balance(address: str) -> float:
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=0.5, min=0.5, max=8), reraise=True)
 def request_airdrop(address: str, sol: float = 0.2) -> dict:
     c = _client()
-    lamports = int(sol * 1_000_000_000)
+    lamports = int(sol * LAMPORTS_PER_SOL)
     resp = c.request_airdrop(PublicKey(address), lamports)
     if resp.get("error"):
         err = str(resp["error"])

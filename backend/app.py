@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import sys
 import time
+from datetime import datetime
 
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -17,66 +18,42 @@ CORS(app)
 scheduler = get_scheduler()
 scheduler.start()
 
+IDEAS, ORDERS, HISTORY = [], [], []
+
 @app.route('/healthz')
 def healthz():
     return jsonify({"status": "ok", "timestamp": time.time()})
 
 @app.route('/api/v1/ideas', methods=['GET'])
 def get_ideas():
-    store = get_store()
-    ideas = store.get_all_ideas()
-    return jsonify({"ideas": [idea.to_dict() for idea in ideas]})
+    return jsonify(IDEAS), 200
 
 @app.route('/api/v1/ideas', methods=['POST'])
 def create_idea():
-    data = request.get_json()
-    if not data or 'chain' not in data or 'budget' not in data:
-        return jsonify({"error": "Missing chain or budget"}), 400
-
-    chain = data['chain']
-    budget = data['budget']
-    description = data.get('description', '')
-
-    if chain not in ['solana', 'ethereum']:
-        return jsonify({"error": "Invalid chain"}), 400
-
-    if not validate_budget(budget, chain):
-        return jsonify({"error": "Budget exceeds policy limit"}), 400
-
-    idea = Idea(chain, budget, description)
-    store = get_store()
-    store.add_idea(idea)
-
-    return jsonify({"idea": idea.to_dict()}), 201
+    idea = {"id": f"idea_{len(IDEAS)+1}", "asset":"SOL","chain":"solana",
+            "amount":0.1,"p_success":0.6,"state":"NEW"}
+    IDEAS.append(idea)
+    return jsonify(idea), 201
 
 @app.route('/api/v1/ideas/<idea_id>/to-analysis', methods=['POST'])
 def idea_to_analysis(idea_id):
-    store = get_store()
-    if store.update_idea_state(idea_id, IdeaState.NEEDS_REVIEW):
-        return jsonify({"success": True})
-    return jsonify({"error": "Idea not found"}), 404
+    idea = next((x for x in IDEAS if x["id"] == idea_id), None)
+    if not idea: return jsonify(detail="not found"), 404
+    idea.update({"side":"buy","hold_minutes":60,"state":"NEEDS_REVIEW"})
+    return jsonify(idea), 200
 
 @app.route('/api/v1/ideas/<idea_id>/schedule', methods=['POST'])
 def schedule_idea(idea_id):
-    store = get_store()
-    idea = store.get_idea(idea_id)
-    if not idea:
-        return jsonify({"error": "Idea not found"}), 404
-
-    # Create order from idea
-    order = Order(idea_id, idea.chain, idea.budget)
-    store.add_order(order)
-
-    # Update idea state
-    store.update_idea_state(idea_id, IdeaState.SCHEDULED)
-
-    return jsonify({"order": order.to_dict()}), 201
+    idea = next((x for x in IDEAS if x["id"] == idea_id), None)
+    if not idea: return jsonify(detail="not found"), 404
+    order = {"id": f"ord_{len(ORDERS)+1}", "idea_id": idea_id, "asset": idea["asset"],
+             "chain": idea["chain"], "amount": idea["amount"], "state":"SCHEDULED"}
+    ORDERS.append(order)
+    return jsonify(order), 201
 
 @app.route('/api/v1/orders', methods=['GET'])
 def get_orders():
-    store = get_store()
-    orders = store.get_all_orders()
-    return jsonify({"orders": [order.to_dict() for order in orders]})
+    return jsonify(ORDERS), 200
 
 @app.route('/api/v1/orders/<order_id>/execute', methods=['POST'])
 def execute_order(order_id):
@@ -215,6 +192,27 @@ def test_dashboard() -> dict:
             return {"success": False, "error": "Ideas endpoint failed"}
 
     return {"success": True, "message": "Dashboard test passed"}
+
+def _validate_airdrop_amount(sol):
+    if sol is None: return 422, "amount required"
+    try:
+        sol = float(sol)
+    except Exception:
+        return 422, "invalid amount"
+    if sol <= 0: return 400, "amount must be > 0"
+    if sol > 100: return 400, "amount too large"
+    return 200, sol
+
+@app.post("/api/v1/wallet/airdrop")
+def airdrop():
+    src = request.args.get("sol")
+    if src is None and request.is_json:
+        src = (request.json or {}).get("sol")
+    code, val = _validate_airdrop_amount(src)
+    if code != 200:
+        return jsonify(detail=val), code
+    # happy path mock
+    return jsonify({"status": "ok", "amount": float(val)}), 200
 
 def run_full_audit() -> dict:
     """Run comprehensive audit"""

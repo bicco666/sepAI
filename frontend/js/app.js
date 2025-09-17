@@ -1,5 +1,29 @@
 // Frontend JavaScript for Solana/Ethereum Trading Dashboard
 
+async function api(path, opts={}) {
+  const summary = document.getElementById('summary');
+  try {
+    const res = await fetch(path, { headers: {'Content-Type':'application/json'}, ...opts });
+    const data = await res.json().catch(()=> ({}));
+    if (!res.ok) throw new Error(data?.detail || JSON.stringify(data) || res.statusText);
+    summary.classList.add('hidden'); summary.textContent='';
+    return data;
+  } catch (err) {
+    summary.textContent = 'Fehler: ' + err.message;
+    summary.classList.remove('hidden');
+    throw err;
+  }
+}
+
+async function refreshIdeas(){
+  const {items} = await api('/api/v1/ideas?limit=20&order=desc');
+  // TODO: Tabelle im DOM neu befüllen (v1: simple innerHTML)
+  const tbody = document.getElementById('tbl-ideas');
+  if (tbody) {
+    tbody.innerHTML = items.map(it => `<tr><td>${it.id}</td><td>${it.chain}</td><td>${it.budget}</td><td>${it.status}</td><td><button>Actions</button></td></tr>`).join('');
+  }
+}
+
 class TradingDashboard {
     constructor() {
         this.apiBase = '/api/v1';
@@ -246,6 +270,16 @@ class TradingDashboard {
         if (auditBtn) {
             auditBtn.addEventListener('click', () => this.runAudit());
         }
+
+        // Buttons verdrahten
+        document.querySelectorAll('button').forEach(btn=>{
+          if (btn.textContent.includes('Idee generieren')) {
+            btn.addEventListener('click', async ()=>{
+              await api('/api/v1/ideas/generate', {method:'POST', body:JSON.stringify({risk:3, asset:'SOL'})});
+              await refreshIdeas();
+            });
+          }
+        });
     }
 
     startPolling() {
