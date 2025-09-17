@@ -1,0 +1,57 @@
+<script>
+(function(){
+  function onReady(fn){ if (document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  function findQuickTestList(){
+    // Try to locate the "Test" tab panel's list (where your other test links are)
+    // Heuristics: within the Quick Tabs container, find links under the active "Test" section
+    const quick = document.querySelector('.quick-tabs') || document.querySelector('#quickTabs');
+    if (!quick) return null;
+    // Look for the inner list container after the 'Test' button
+    // Fallback: just append inside quick
+    return quick.querySelector('ul, .links, .list, nav, div') || quick;
+  }
+  function getResultBox(){
+    let box = document.getElementById('testNavResult');
+    if (!box){
+      box = document.createElement('div');
+      box.id = 'testNavResult';
+      box.style.cssText = 'white-space:pre-wrap;background:#0b1020;color:#d7e1ff;padding:12px;border-radius:10px;border:1px solid #334;max-height:260px;overflow:auto;margin-top:10px;';
+      const quick = document.querySelector('.quick-tabs') || document.querySelector('#quickTabs') || document.body;
+      quick.appendChild(box);
+    }
+    return box;
+  }
+  async function runBundle(ev){
+    ev && ev.preventDefault();
+    const link = ev && ev.currentTarget;
+    if (link){ link.classList.add('is-active'); link.textContent = 'Alle Funktionstests (läuft…)'; }
+    const box = getResultBox();
+    box.textContent = 'Starte Bundle-Tests…';
+    try{
+      const res = await fetch('/api/v1/tests/run', {method:'POST'});
+      const data = await res.json();
+      const t = data.totals || {total:0, passed:0, failures:0, errors:0, skipped:0};
+      const summary = `${t.passed}/${t.total} Pass`;
+      // Write only the summary as requested
+      box.textContent = summary;
+    }catch(e){
+      box.textContent = 'Fehler beim Ausführen der Tests: ' + (e && e.message || e);
+    }finally{
+      if (link){ link.textContent = 'Alle Funktionstests (Bundle)'; }
+    }
+  }
+  onReady(function(){
+    const list = findQuickTestList();
+    if (!list || document.getElementById('bundleTestsLink')) return;
+    const a = document.createElement('a');
+    a.id = 'bundleTestsLink';
+    a.href = '#';
+    a.textContent = 'Alle Funktionstests (Bundle)';
+    a.className = 'test-link';
+    a.style.display = 'block';
+    a.style.marginTop = '6px';
+    a.addEventListener('click', runBundle);
+    list.appendChild(a);
+  });
+})();
+</script>

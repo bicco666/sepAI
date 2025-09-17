@@ -1,0 +1,42 @@
+<script>
+(function(){
+  function onReady(fn){ if (document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  async function runAllTests(){
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+    try{
+      const res = await fetch('/api/v1/tests/run', {method:'POST'});
+      const data = await res.json();
+      const log = document.getElementById('testNavResult') || (function(){
+        const pre = document.createElement('pre');
+        pre.id = 'testNavResult';
+        pre.style.cssText = 'white-space:pre-wrap;background:#0b1020;color:#d7e1ff;padding:12px;border-radius:10px;border:1px solid #334;max-height:320px;overflow:auto;margin-top:10px;';
+        (document.querySelector('.quick-tabs')||document.body).appendChild(pre);
+        return pre;
+      })();
+      const ok = data.ok ? 'OK ✅' : 'FAIL ❌';
+      log.textContent = `[${ok}] exit=${data.exit_code}\n\n` +
+                        (data.stdout_tail || '(no stdout)') + '\n\n' +
+                        (data.stderr_tail ? ('stderr:\n'+data.stderr_tail) : '');
+      btn.textContent = 'Run API Tests';
+    }catch(e){
+      alert('Test-Run Fehler: '+(e && e.message || e));
+    }finally{
+      btn.disabled = false;
+    }
+  }
+  onReady(function(){
+    const q = document.querySelector('#quickTabs') || document.querySelector('.quick-tabs');
+    if (!q) return;
+    // Button hinzufügen (nicht-invasiv)
+    const btn = document.createElement('button');
+    btn.id = 'btnRunApiTests';
+    btn.textContent = 'Run API Tests';
+    btn.className = 'test-link';
+    btn.style.marginLeft = '10px';
+    btn.addEventListener('click', runAllTests);
+    q.appendChild(btn);
+  });
+})();
+</script>

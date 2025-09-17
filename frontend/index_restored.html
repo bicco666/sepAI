@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CEO Übersicht – Solana Trading Organisation (Design-Mockup v0.6)</title>
- <script src="/frontend/tests_quicktab_hook.html"></script>
   <style>
     :root{
       --bg: #0b0c10;
@@ -984,97 +983,6 @@
       window.refreshStrategies = refreshStrategies;
     })();
   </script>
-<script>
-// === sepAI wiring v0.2.5-safe (non-destructive) ===
-(function(){
-  const API = {
-    async get(p){ const r=await fetch(p); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} },
-    async post(p,b){ const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})}); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} },
-    async form(p,f){ const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(f).toString()}); const t=await r.text(); try{return{ok:r.ok,status:r.status,data:JSON.parse(t)}}catch{return{ok:r.ok,status:r.status,data:t}} }
-  };
-  const store = {
-    get addr(){return localStorage.getItem('sepai.wallet.address')||''},
-    set addr(v){localStorage.setItem('sepai.wallet.address',(v||'').trim())},
-    get riskResearch(){return +(localStorage.getItem('sepai.risk.research')||3)},
-    set riskResearch(v){localStorage.setItem('sepai.risk.research',String(v))},
-    get riskAnalysis(){return +(localStorage.getItem('sepai.risk.analysis')||3)},
-    set riskAnalysis(v){localStorage.setItem('sepai.risk.analysis',String(v))},
-  };
-  function qs(x){return document.getElementById(x)}
-  function toast(msg){
-    let t=document.getElementById('globalToast'); if(!t){t=document.createElement('div');t.id='globalToast';t.style.cssText='position:fixed;bottom:18px;right:18px;background:#0d1122;border:1px solid #3b82f6;color:#cfe1ff;padding:10px 14px;border-radius:10px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,.35)';document.body.appendChild(t)}
-    t.textContent=msg; t.style.display='block'; clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>t.style.display='none',2600);
-  }
-
-  async function initAddress(){
-    if (store.addr) return store.addr;
-    const r = await API.get('/api/v1/wallet/address');
-    if (r.ok && r.data.public_key){ store.addr = r.data.public_key; return store.addr; }
-    return '';
-  }
-
-  async function refreshBalance(){
-    const balEl = qs('balance'); if (!balEl) return;
-    const addr = store.addr || await initAddress();
-    if (!addr){ balEl.textContent = '—'; return; }
-    const r = await API.get(`/api/v1/wallet/balance?address=${encodeURIComponent(addr)}`);
-    if (r.ok){
-      const v = r.data.balance_sol ?? r.data.balance ?? 0;
-      balEl.textContent = `${Number(v).toFixed(4)} SOL`;
-    } else {
-      balEl.textContent = `Fehler (${r.status})`;
-    }
-  }
-
-  async function airdrop(amount){
-    const addr = store.addr || await initAddress();
-    if (!addr) return toast('Adresse fehlt');
-    const r = await API.form('/api/v1/wallet/airdrop', {address: addr, sol: String(amount)});
-    if (r.ok){ toast('Airdrop OK'); refreshBalance(); } else { toast('Airdrop Fehler ('+r.status+')'); }
-  }
-
-  function wire(){
-    // Set address button
-    const setBtn = qs('setAddress');
-    if (setBtn){
-      setBtn.addEventListener('click', async ()=>{
-        const cur = store.addr || 'So1anaEXAMPLEaddre55...............1234';
-        const v = prompt('Solana-Adresse (Base58):', cur);
-        if (v){ store.addr = v.trim(); toast('Adresse gespeichert'); refreshBalance(); }
-      });
-    }
-    // Refresh balance button
-    const balBtn = qs('refreshBalance');
-    if (balBtn){
-      balBtn.addEventListener('click', (e)=>{
-        if (e.shiftKey) { e.preventDefault(); airdrop(0.2); } else { refreshBalance(); }
-      });
-    }
-    // Idea generator
-    const ideaBtn = qs('btnIdea');
-    const ideaVal = qs('ideaTimeVal');
-    const ideaUnit = qs('ideaTimeUnit');
-    if (ideaBtn){
-      ideaBtn.addEventListener('click', async ()=>{
-        const v = Math.max(5, parseInt((ideaVal && ideaVal.value)||'10',10));
-        const u = (ideaUnit && ideaUnit.value)||'minutes';
-        const risk = +(qs('riskResearch')?.value||store.riskResearch||3);
-        const r = await API.post('/api/v1/agents/research/generate', { time_value: v, time_unit: u, risk_pref: risk, live: false });
-        if (r.ok) toast('Ideen generiert: '+(r.data.count||0)); else toast('Fehler bei Idee');
-      });
-    }
-    // Persist risk sliders
-    const rs = qs('riskResearch'); const rsV = qs('riskResearchVal');
-    const ra = qs('riskAnalysis'); const raV = qs('riskAnalysisVal');
-    if (rs){ rs.value = store.riskResearch; rsV && (rsV.textContent = rs.value+'/5'); rs.addEventListener('input', ()=>{ store.riskResearch = +rs.value; rsV && (rsV.textContent = rs.value+'/5'); }); }
-    if (ra){ ra.value = store.riskAnalysis; raV && (raV.textContent = ra.value+'/5'); ra.addEventListener('input', ()=>{ store.riskAnalysis = +ra.value; raV && (raV.textContent = ra.value+'/5'); }); }
-  }
-
-  async function boot(){ wire(); await initAddress(); await refreshBalance(); }
-  if (document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
-})();
-// === /wiring ===
-</script>
 </body>
 </html>
 
