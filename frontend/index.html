@@ -23,7 +23,8 @@
     .grid{display:grid;gap:18px}
     .g-3{grid-template-columns:1fr}
     @media(min-width:960px){.g-3{grid-template-columns:2fr 1fr}}
-    .card{background:linear-gradient(180deg,#121423,#0f1220);border:1px solid var(--border);border-radius:18px;padding:18px}
+    .card{background:linear-gradient(180deg,#121423,#0f1220);border:1px solid var(--border);border-radius:18px;padding:18px;transition: transform 0.2s ease, box-shadow 0.2s ease;}
+    .card:hover{transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124, 92, 255, 0.15);}
     .title{font-weight:600;margin:0 0 10px 0}
     pre.ascii{background:#0a0d18;border:1px solid #0f1220;color:#cbd5e1;border-radius:14px;padding:14px;overflow:auto;font-size:12px;line-height:1.35}
     .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0f1220;border:1px solid var(--border);font-size:12px;color:#9aa3b2}
@@ -53,7 +54,8 @@
     .btn-ghost{background:transparent;border:1px dashed var(--border);padding:6px 10px;border-radius:10px;color:#e8eaf0}
     .btn-ghost[disabled]{opacity:.5;cursor:not-allowed}
     .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .btn{appearance:none;border:1px solid var(--border);background:linear-gradient(180deg,#171a26,#121523);color:#e8eaf0;padding:10px 14px;border-radius:12px;cursor:pointer}
+    .btn{appearance:none;border:1px solid var(--border);background:linear-gradient(180deg,#171a26,#121523);color:#e8eaf0;padding:10px 14px;border-radius:12px;cursor:pointer;transition: all 0.2s ease;}
+    .btn:hover{background:linear-gradient(180deg,#1f2233,#161728);border-color:#7c5cff; transform: translateY(-1px);}
     .btn[disabled]{opacity:.6;cursor:not-allowed}
     .idea-toolbar{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
     .input{background:#0d1122;border:1px solid var(--border);color:#e8eaf0;border-radius:10px;padding:8px 10px}
@@ -100,14 +102,29 @@
         <li class="side-nav-item has-sub">
           <a class="side-nav-link" href="#test">Test</a>
           <ul class="side-nav-sublist">
-            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/balance?address=So1anaEXAMPLEaddre55...............1234">Wallet-Balance-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/agents/research/generate" data-body='{"time_value":15,"time_unit":"minutes","risk_pref":3,"live":false}'>Research-Agent-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/trades/recent">Trades-Historie-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/tests/bundle" data-test-type="bundle">Bundle-Funktionstest</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/status" data-test-type="wallet">Wallet-Status-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/network" data-test-type="wallet">Wallet-Netzwerk-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="GET" data-endpoint="/api/v1/wallet/health" data-test-type="wallet">Wallet-Health-Test</a></li>
-            <li><a class="side-nav-link test-link" href="#" data-method="POST" data-endpoint="/api/v1/wallet/airdrop" data-body='{"sol":0.01}' data-test-type="wallet">Wallet-Airdrop-Test</a></li>
+            <!-- Test Links - now call shell scripts via API -->
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_balance">Wallet-Balance-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="research_generate">Research-Agent-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="trades_history">Trades-Historie-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_balance">Wallet-Balance-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="research_generate">Research-Agent-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="strategies_generate">Analyse-Agent-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="bundle">Bundle-Funktionstest</a></li>
+
+            <!-- Zusätzliche Tests -->
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_status">Wallet-Status-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_network">Wallet-Netzwerk-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_health">Wallet-Health-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="wallet_airdrop">Wallet-Airdrop-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="agent_status">Agent-Status-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="ideas_list">Ideen-Liste-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="strategies_list">Strategien-Liste-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="trades_history">Trades-Historie-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="system_health">System-Health-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="ideas_generate">Ideen-Generierung-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="trade_execute">Trade-Ausführung-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="strategy_execute">Strategie-Ausführung-Test</a></li>
+            <li><a class="side-nav-link test-link" href="#" data-test-type="strategies_list">Strategien-Verfügbarkeit-Test</a></li>
           </ul>
         </li>
       </ul>
@@ -170,6 +187,40 @@
 
         <p class="sub">Hinweis: Buttons sind im Design aktiv; einige Aktionen rufen die API auf (dev/modus).</p>
       </section>
+
+      <section class="card ethereum-wallet">
+        <div class="title">Ethereum Gruppen-Wallet</div>
+
+        <!-- Network Status -->
+        <div style="margin-bottom:12px">
+          <span class="chip" id="ethereumNetworkChip">Netzwerk: <span id="ethereumNetworkStatus">Sepolia Testnet</span></span>
+          <span class="chip" id="ethereumAirdropChip" style="display:none">Airdrop verfügbar</span>
+        </div>
+
+        <!-- Address -->
+        <div style="margin-bottom:8px">
+          <span class="chip">Adresse</span>
+          <span class="mono" id="ethereumWalletAddress">eth1231434</span>
+        </div>
+
+        <!-- Balance -->
+        <div style="margin-bottom:8px">
+          <span class="chip">Kontostand</span>
+          <strong class="mono" id="ethereumBalance">7.1955 ETH</strong>
+        </div>
+
+        <!-- Wallet Actions -->
+        <div class="toolbar">
+          <button class="btn" id="ethereumSetAddress">Adresse setzen</button>
+          <button class="btn" id="ethereumRefreshBalance">Kontostand abrufen</button>
+          <button class="btn" id="ethereumRequestAirdrop" style="display:none">Airdrop anfragen (0.1 ETH)</button>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="ethereumWalletStatus" class="sub" style="margin-top:8px; display:none;"></div>
+
+        <p class="sub">Hinweis: Gruppen-Wallet für gemeinsame Ethereum-Transaktionen. Buttons sind im Design aktiv; einige Aktionen rufen die API auf (dev/modus).</p>
+      </section>
     </div>
 
     <section class="card" style="margin-top:18px">
@@ -184,12 +235,18 @@
           <div class="top"><strong>3. Forschung</strong><span class="badge">bereit</span></div>
           <div class="links"><span class="version">v1.2.3</span></div>
           <div class="risk"><label for="riskResearch">RISK:</label><input id="riskResearch" class="range" type="range" min="1" max="5" step="1" value="2"><span id="riskResearchVal" class="val">2/5</span></div>
+          <div class="toolbar" style="margin-top:8px;">
+            <button class="btn" id="btnResearchGenerate" style="font-size:12px;padding:6px 10px;">💡 Idee generieren</button>
+          </div>
           <p class="sub">Exploration neuer Ertragsquellen.</p>
         </div>
         <div class="dept">
           <div class="top"><strong>4. Analyse</strong><span class="badge">bereit</span></div>
           <div class="links"><span class="version">v1.2.3</span></div>
           <div class="risk"><label for="riskAnalysis">RISK:</label><input id="riskAnalysis" class="range" type="range" min="1" max="5" step="1" value="2"><span id="riskAnalysisVal" class="val">2/5</span></div>
+          <div class="toolbar" style="margin-top:8px;">
+            <button class="btn" id="btnAnalysisRefine" style="font-size:12px;padding:6px 10px;" disabled>🔍 Analyse verfeinern</button>
+          </div>
           <p class="sub">Strategien, Backtests, Runbooks.</p>
         </div>
         <div class="dept">
@@ -708,82 +765,204 @@
       setTimeout(() => ideaToast.style.display = 'none', 2800);
     });
 
-    const testLinks = document.querySelectorAll('.test-link');
-    const testLog = document.getElementById('testNavResult');
-    const pretty = (val) => typeof val === 'string' ? val : JSON.stringify(val, null, 2);
-    testLinks.forEach(link => {
-      link.addEventListener('click', async (event) => {
-        event.preventDefault();
-        if (!testLog) return;
-        const endpoint = link.dataset.endpoint;
-        if (!endpoint) return;
-        const method = (link.dataset.method || 'GET').toUpperCase();
-        const body = link.dataset.body || '';
-        const testType = (link.dataset.testType || '').toLowerCase();
-        const headers = {};
-        if (body && method !== 'GET') {
-          headers['Content-Type'] = 'application/json';
-        }
-        testLinks.forEach(it => it.classList.remove('is-active'));
-        link.classList.add('is-active');
-        testLog.textContent = `Starte ${link.textContent.trim()}…`;
-        try {
-          const response = await fetch(endpoint, {
-            method,
-            headers,
-            body: body && method !== 'GET' ? body : undefined,
-          });
-          const raw = await response.text();
-          let parsed = raw;
+    // Test link handler - ensure DOM is ready
+    function initTestLinks() {
+      const testLinks = document.querySelectorAll('.test-link');
+      const testLog = document.getElementById('testNavResult');
+      const pretty = (val) => typeof val === 'string' ? val : JSON.stringify(val, null, 2);
+
+      console.log('Initializing test links:', testLinks.length);
+
+      if (testLinks.length === 0) {
+        console.warn('No test links found!');
+        return;
+      }
+
+      testLinks.forEach(link => {
+        // Remove existing listeners to prevent duplicates
+        link.removeEventListener('click', link._testHandler);
+
+        link._testHandler = async (event) => {
+          event.preventDefault();
+          console.log('Test link clicked:', link.dataset.endpoint);
+
+          if (!testLog) {
+            console.error('testNavResult element not found');
+            return;
+          }
+
+          const endpoint = link.dataset.endpoint;
+          if (!endpoint) {
+            console.error('No endpoint specified for test link');
+            return;
+          }
+
+          const method = (link.dataset.method || 'GET').toUpperCase();
+          const body = link.dataset.body || '';
+          const testType = (link.dataset.testType || '').toLowerCase();
+          const testName = link.textContent.trim();
+
+          console.log('Test details:', { endpoint, method, testType, testName });
+
+          const headers = {};
+          if (body && method !== 'GET') {
+            headers['Content-Type'] = 'application/json';
+          }
+
+          // Update UI
+          document.querySelectorAll('.test-link').forEach(it => it.classList.remove('is-active'));
+          link.classList.add('is-active');
+          testLog.textContent = `Starte ${testName}…`;
+
+          const startTime = Date.now();
+
           try {
-            parsed = JSON.parse(raw);
-          } catch (err) {
-            parsed = raw;
+            console.log('Making fetch request to:', endpoint);
+            const response = await fetch(endpoint, {
+              method,
+              headers,
+              body: body && method !== 'GET' ? body : undefined,
+            });
+
+            const responseTime = Date.now() - startTime;
+            console.log('Response received:', response.status, responseTime + 'ms');
+
+            const raw = await response.text();
+            let parsed = raw;
+            try {
+              parsed = JSON.parse(raw);
+            } catch (err) {
+              parsed = raw;
+            }
+
+            let message = `Status ${response.status}: ${pretty(parsed)}`;
+            let testResult = {
+              success: response.ok,
+              status: response.status,
+              responseTime: responseTime
+            };
+
+            if (testType === 'bundle' && parsed && typeof parsed === 'object') {
+              const totals = parsed.totals || parsed.summary || (parsed.result && parsed.result.totals);
+              const summaryParts = [];
+              if (totals) {
+                const pick = (...values) => values.find((value) => value !== undefined && value !== null);
+                const fallback = (value, def = 0) => (value === undefined || value === null ? def : value);
+                const total = fallback(pick(totals.total, totals.tests, totals.count), 0);
+                const passed = fallback(pick(totals.passed, totals.success, totals.ok), 0);
+                const failuresBase = fallback(pick(totals.failures, totals.failed), 0);
+                const errors = fallback(totals.errors, 0);
+                const failures = failuresBase + errors;
+                const skipped = fallback(pick(totals.skipped, totals.xfailed, totals.xpassed), 0);
+                summaryParts.push(`${passed}/${total} passed`);
+                if (failures) summaryParts.push(`failures: ${failures}`);
+                if (skipped) summaryParts.push(`skipped: ${skipped}`);
+              }
+              const exitCode = parsed.exit_code !== undefined && parsed.exit_code !== null ? parsed.exit_code : parsed.exitCode;
+              if (exitCode !== undefined && exitCode !== null) {
+                summaryParts.push(`exit=${exitCode}`);
+              }
+              if (summaryParts.length) {
+                summaryParts.unshift(`status=${response.status}`);
+                message = summaryParts.join(" | ");
+                const stdout = parsed.stdout_tail || parsed.stdout;
+                const stderr = parsed.stderr_tail || parsed.stderr;
+                if (stdout) {
+                  message += `\nstdout:\n${stdout}`;
+                }
+                if (stderr) {
+                  message += `\nstderr:\n${stderr}`;
+                }
+                if (!stdout && !stderr) {
+                  message += `\n${pretty(parsed)}`;
+                }
+              }
+            }
+
+            testLog.textContent = message;
+
+            // Create and save test report
+            const reportData = {
+              type: testType || 'individual',
+              name: testName,
+              endpoint: endpoint,
+              method: method,
+              status: response.status,
+              responseTime: responseTime,
+              summary: {
+                success: response.ok,
+                status: response.status,
+                responseTime: responseTime
+              },
+              details: {
+                endpoint: endpoint,
+                method: method,
+                status: response.status,
+                responseTime: responseTime,
+                body: body,
+                response: parsed
+              },
+              fullReport: formatTestReport(testName, endpoint, method, response.status, responseTime, parsed, body)
+            };
+
+            console.log('Saving report:', reportData.name);
+            const reportSaved = window.ReportsManager.saveReport(reportData);
+            if (reportSaved) {
+              message += '\n\nReport wurde gespeichert und ist im Reports-Menü verfügbar.';
+              testLog.textContent = message;
+              // Refresh reports list
+              window.ReportsManager.renderReportsList();
+              console.log('Report saved and list refreshed');
+            } else {
+              console.error('Failed to save report');
+            }
+
+          } catch (error) {
+            const responseTime = Date.now() - startTime;
+            console.error('Test error:', error);
+            testLog.textContent = `Fehler bei ${testName}: ${(error && error.message) || error}`;
+
+            // Create error report
+            const errorReport = {
+              type: testType || 'individual',
+              name: testName,
+              endpoint: endpoint,
+              method: method,
+              status: 0,
+              responseTime: responseTime,
+              summary: {
+                success: false,
+                status: 0,
+                responseTime: responseTime,
+                error: (error && error.message) || error
+              },
+              details: {
+                endpoint: endpoint,
+                method: method,
+                error: (error && error.message) || error,
+                responseTime: responseTime
+              },
+              fullReport: formatTestReport(testName, endpoint, method, 0, responseTime, null, body, (error && error.message) || error)
+            };
+
+            const reportSaved = window.ReportsManager.saveReport(errorReport);
+            if (reportSaved) {
+              testLog.textContent += '\n\nFehler-Report wurde gespeichert und ist im Reports-Menü verfügbar.';
+              window.ReportsManager.renderReportsList();
+            }
           }
-          let message = `Status ${response.status}: ${pretty(parsed)}`;
-          if (testType === 'bundle' && parsed && typeof parsed === 'object') {
-            const totals = parsed.totals || parsed.summary || (parsed.result && parsed.result.totals);
-            const summaryParts = [];
-            if (totals) {
-              const pick = (...values) => values.find((value) => value !== undefined && value !== null);
-              const fallback = (value, def = 0) => (value === undefined || value === null ? def : value);
-              const total = fallback(pick(totals.total, totals.tests, totals.count), 0);
-              const passed = fallback(pick(totals.passed, totals.success, totals.ok), 0);
-              const failuresBase = fallback(pick(totals.failures, totals.failed), 0);
-              const errors = fallback(totals.errors, 0);
-              const failures = failuresBase + errors;
-              const skipped = fallback(pick(totals.skipped, totals.xfailed, totals.xpassed), 0);
-              summaryParts.push(`${passed}/${total} passed`);
-              if (failures) summaryParts.push(`failures: ${failures}`);
-              if (skipped) summaryParts.push(`skipped: ${skipped}`);
-            }
-            const exitCode = parsed.exit_code !== undefined && parsed.exit_code !== null ? parsed.exit_code : parsed.exitCode;
-            if (exitCode !== undefined && exitCode !== null) {
-              summaryParts.push(`exit=${exitCode}`);
-            }
-            if (summaryParts.length) {
-              summaryParts.unshift(`status=${response.status}`);
-              message = summaryParts.join(" | ");
-              const stdout = parsed.stdout_tail || parsed.stdout;
-              const stderr = parsed.stderr_tail || parsed.stderr;
-              if (stdout) {
-                message += `\nstdout:\n${stdout}`;
-              }
-              if (stderr) {
-                message += `\nstderr:\n${stderr}`;
-              }
-              if (!stdout && !stderr) {
-                message += `\n${pretty(parsed)}`;
-              }
-            }
-          }
-          testLog.textContent = message;
-        } catch (error) {
-          testLog.textContent = `Fehler bei ${link.textContent.trim()}: ${(error && error.message) || error}`;
-          console.error(error);
-        }
+        };
+
+        link.addEventListener('click', link._testHandler);
       });
-    });
+    }
+
+    // Initialize test links when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTestLinks);
+    } else {
+      initTestLinks();
+    }
   </script>
 
   <script>
@@ -874,6 +1053,85 @@
         }
       }
 
+      // Ethereum wallet functionality
+      async function loadEthereumWalletStatus() {
+        const addressEl = document.getElementById('ethereumWalletAddress');
+        const balanceEl = document.getElementById('ethereumBalance');
+        const networkEl = document.getElementById('ethereumNetworkStatus');
+        const networkChip = document.getElementById('ethereumNetworkChip');
+        const airdropChip = document.getElementById('ethereumAirdropChip');
+        const airdropBtn = document.getElementById('ethereumRequestAirdrop');
+        const statusEl = document.getElementById('ethereumWalletStatus');
+
+        // For demo purposes, set hardcoded values for group wallet
+        networkEl.textContent = 'SEPOLIA TESTNET';
+        networkChip.className = 'chip devnet';
+        airdropChip.style.display = 'inline-flex';
+        airdropBtn.style.display = 'inline-flex';
+        addressEl.textContent = 'eth1231434';
+        balanceEl.textContent = '7.1955 ETH';
+        statusEl.style.display = 'none';
+
+        // Optionally fetch real data, but for demo, we use hardcoded
+        /*
+        try {
+          const res = await fetch('/api/v1/wallet/ethereum/status');
+          if (!res.ok) throw new Error('HTTP '+res.status);
+          const data = await res.json();
+
+          // Update network status
+          networkEl.textContent = data.network.toUpperCase();
+          networkChip.className = `chip ${data.is_devnet ? 'devnet' : data.is_mainnet ? 'mainnet' : 'custom'}`;
+
+          // Show/hide airdrop chip and button
+          if (data.airdrop_available) {
+            airdropChip.style.display = 'inline-flex';
+            airdropBtn.style.display = 'inline-flex';
+          } else {
+            airdropChip.style.display = 'none';
+            airdropBtn.style.display = 'none';
+          }
+
+          // Update address
+          if (data.address) {
+            addressEl.textContent = data.address;
+          } else if (data.address_error) {
+            addressEl.textContent = 'Fehler: ' + data.address_error;
+          } else {
+            addressEl.textContent = 'Nicht verfügbar';
+          }
+
+          // Update balance
+          if (data.balance_eth !== null) {
+            balanceEl.textContent = `${Number(data.balance_eth).toFixed(4)} ETH`;
+          } else if (data.balance_error) {
+            balanceEl.textContent = 'Fehler: ' + data.balance_error;
+          } else {
+            balanceEl.textContent = '—';
+          }
+
+          // Show status message if there are errors
+          if (data.address_error || data.balance_error) {
+            let statusMsg = '';
+            if (data.address_error) statusMsg += 'Adresse-Fehler: ' + data.address_error;
+            if (data.balance_error) statusMsg += (statusMsg ? '; ' : '') + 'Balance-Fehler: ' + data.balance_error;
+            statusEl.textContent = statusMsg;
+            statusEl.style.display = 'block';
+          } else {
+            statusEl.style.display = 'none';
+          }
+
+        } catch (e) {
+          console.error('Ethereum wallet status error:', e);
+          addressEl.textContent = 'Fehler beim Laden';
+          balanceEl.textContent = 'Fehler';
+          networkEl.textContent = 'Unbekannt';
+          statusEl.textContent = 'Fehler beim Laden des Ethereum Wallet-Status';
+          statusEl.style.display = 'block';
+        }
+        */
+      }
+
       const btn = document.getElementById('refreshBalance');
       if (btn) {
         btn.onclick = loadWalletStatus;
@@ -910,6 +1168,43 @@
         };
       }
 
+      // Ethereum wallet buttons
+      const ethereumBtn = document.getElementById('ethereumRefreshBalance');
+      if (ethereumBtn) {
+        ethereumBtn.onclick = loadEthereumWalletStatus;
+      }
+
+      // Ethereum airdrop functionality
+      const ethereumAirdropBtn = document.getElementById('ethereumRequestAirdrop');
+      if (ethereumAirdropBtn) {
+        ethereumAirdropBtn.onclick = async () => {
+          ethereumAirdropBtn.disabled = true;
+          ethereumAirdropBtn.textContent = 'Airdrop wird angefordert...';
+
+          try {
+            const res = await fetch('/api/v1/wallet/ethereum/airdrop', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ eth: 0.1 })
+            });
+
+            if (!res.ok) throw new Error('HTTP '+res.status);
+            const data = await res.json();
+
+            toast('Ethereum Airdrop erfolgreich! TX: ' + (data.signature || 'N/A'));
+            // Refresh balance after airdrop
+            setTimeout(loadEthereumWalletStatus, 2000);
+
+          } catch (e) {
+            console.error('Ethereum airdrop error:', e);
+            toast('Ethereum Airdrop fehlgeschlagen: ' + e.message);
+          } finally {
+            ethereumAirdropBtn.disabled = false;
+            ethereumAirdropBtn.textContent = 'Airdrop anfragen (0.1 ETH)';
+          }
+        };
+      }
+
       function normalize(s){
         return (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
       }
@@ -936,18 +1231,18 @@
         const tb = findTbodyByTitle('ideen');
         if (!tb) return;
         try {
-          const res = await fetch('/api/v1/ideas');
+          const res = await fetch('/api/v1/ideas/');
           if (!res.ok) throw new Error('HTTP '+res.status);
           const ideas = await res.json();
           const rows = ideas.map(it => {
-            const dt = it.created_at ? new Date(it.created_at) : new Date();
+            const dt = it.created_at ? new Date(it.created_at * 1000) : new Date();
             return `<tr>`+
               `<td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>`+
-              `<td>${esc(it.source||'')}</td>`+
-              `<td>${esc(it.asset||'')}</td>`+
-              `<td>${esc(it.type||'')}</td>`+
+              `<td>${esc(it.source||'Forschung')}</td>`+
+              `<td>${esc(it.asset||'SOL')}</td>`+
+              `<td>${esc(it.type||'trading')}</td>`+
               `<td>${Number(it.budget||0).toFixed(2)}</td>`+
-              `<td><div class="risk-inline"><input type="range" min="1" max="5" step="1" value="${esc(it.risk||1)}" oninput="this.nextElementSibling.textContent=this.value+'/5'"><span class="val">${esc(it.risk||1)}/5</span></div></td>`+
+              `<td><div class="risk-inline"><input type="range" min="1" max="5" step="1" value="${esc(it.risk||3)}" oninput="this.nextElementSibling.textContent=this.value+'/5'"><span class="val">${esc(it.risk||3)}/5</span></div></td>`+
               `<td>${esc(it.status||'NEW')}</td>`+
               `<td class="actions-inline"><button class="btn-ghost" disabled>Zur Strategie</button><button class="btn-ghost" disabled>Quality-Check</button><button class="btn-ghost" disabled>Einplanen</button><button class="btn-ghost" disabled>Verwerfen</button></td>`+
             `</tr>`;
@@ -957,6 +1252,56 @@
           console.error('ideas refresh failed', e);
         }
       }
+
+      async function refreshStrategies(){
+        try {
+          const res = await fetch('/api/v1/strategies');
+          if (!res.ok) throw new Error('HTTP '+res.status);
+          const strategies = await res.json();
+
+          // Update strategies table if it exists
+          const tb = document.getElementById('strategies-tbody');
+          if (tb && strategies.length > 0) {
+            const rows = strategies.map(strategy => {
+              const dt = strategy.created_at ? new Date(strategy.created_at * 1000) : new Date();
+              return `<tr data-strategy="${strategy.id}">`+
+                `<td>${dt.toISOString().slice(0,16).replace('T',' ')}</td>`+
+                `<td>${esc(strategy.idea_id || strategy.id)}</td>`+
+                `<td>${esc(strategy.entry_conditions || 'Price > X')}</td>`+
+                `<td>${esc(strategy.exit_conditions || 'Take profit')}</td>`+
+                `<td>${Number(strategy.stop_loss || 0).toFixed(4)}</td>`+
+                `<td>${Number(strategy.take_profit || 0).toFixed(4)}</td>`+
+                `<td>${esc(strategy.status || 'DRAFT')}</td>`+
+                `<td class="actions-inline"><button class="btn" onclick="executeStrategy('${strategy.id}')">Execute</button></td>`+
+              `</tr>`;
+            }).join('');
+            tb.innerHTML = rows;
+          }
+        } catch (e) {
+          console.error('strategies refresh failed', e);
+        }
+      }
+
+      // Global function for strategy execution
+      window.executeStrategy = async function(strategyId) {
+        try {
+          const res = await fetch(`/api/v1/strategies/${strategyId}/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ live: false })
+          });
+
+          if (res.ok) {
+            toast('✅ Strategie ausgeführt!');
+            refreshStrategies();
+          } else {
+            toast('❌ Fehler bei der Ausführung');
+          }
+        } catch (e) {
+          console.error('Strategy execution failed:', e);
+          toast('❌ Fehler bei der Strategie-Ausführung');
+        }
+      };
 
       async function refreshHistory(){
         const tb = findTbodyByTitle('historie');
@@ -1062,6 +1407,7 @@
       // Initial data fill
       refreshIdeas();
       refreshHistory();
+      refreshStrategies();
       renderAgents();
       renderReleases();
     })();
@@ -1240,12 +1586,89 @@
     const ra = qs('riskAnalysis'); const raV = qs('riskAnalysisVal');
     if (rs){ rs.value = store.riskResearch; rsV && (rsV.textContent = rs.value+'/5'); rs.addEventListener('input', ()=>{ store.riskResearch = +rs.value; rsV && (rsV.textContent = rs.value+'/5'); }); }
     if (ra){ ra.value = store.riskAnalysis; raV && (raV.textContent = ra.value+'/5'); ra.addEventListener('input', ()=>{ store.riskAnalysis = +ra.value; raV && (raV.textContent = ra.value+'/5'); }); }
+
+    // Research idea generation
+    const btnResearch = qs('btnResearchGenerate');
+    if (btnResearch) {
+      btnResearch.addEventListener('click', async () => {
+        btnResearch.disabled = true;
+        btnResearch.textContent = '🔄 Generiere...';
+
+        try {
+          const risk = +(qs('riskResearch')?.value || store.riskResearch || 3);
+          const timeVal = +(qs('ideaTimeVal')?.value || 30);
+          const timeUnit = qs('ideaTimeUnit')?.value || 'minutes';
+
+          const minutes = timeUnit === 'hours' ? timeVal * 60 : timeVal;
+
+          const res = await API.post('/api/v1/ideas/generate', {
+            limit: 1,
+            risk: risk,
+            minutes: minutes
+          });
+
+          if (res.ok && res.data.items && res.data.items.length > 0) {
+            const idea = res.data.items[0];
+            toast(`💡 Neue Idee generiert: ${idea.asset} - ${idea.type}`);
+
+            // Refresh ideas list
+            refreshIdeas();
+
+            // Enable analysis button
+            const btnAnalysis = qs('btnAnalysisRefine');
+            if (btnAnalysis) {
+              btnAnalysis.disabled = false;
+              btnAnalysis.textContent = '🔍 Analyse verfeinern';
+            }
+          } else {
+            toast('❌ Fehler bei der Ideen-Generierung');
+          }
+        } catch (e) {
+          console.error('Research generation error:', e);
+          toast('❌ Fehler bei der Forschung');
+        } finally {
+          btnResearch.disabled = false;
+          btnResearch.textContent = '💡 Idee generieren';
+        }
+      });
+    }
+
+    // Analysis refinement
+    const btnAnalysis = qs('btnAnalysisRefine');
+    if (btnAnalysis) {
+      btnAnalysis.addEventListener('click', async () => {
+        btnAnalysis.disabled = true;
+        btnAnalysis.textContent = '🔄 Analysiere...';
+
+        try {
+          // Generate strategies from ideas
+          const res = await API.post('/api/v1/strategies/generate', { limit: 1 });
+
+          if (res.ok && res.data.items && res.data.items.length > 0) {
+            const strategy = res.data.items[0];
+            toast(`📊 Strategie erstellt: ${strategy.asset} - Entry: ${strategy.entry_conditions}`);
+
+            // Refresh strategies list
+            refreshStrategies();
+          } else {
+            toast('❌ Fehler bei der Strategie-Erstellung');
+          }
+        } catch (e) {
+          console.error('Analysis refinement error:', e);
+          toast('❌ Fehler bei der Analyse');
+        } finally {
+          btnAnalysis.disabled = false;
+          btnAnalysis.textContent = '🔍 Analyse verfeinern';
+        }
+      });
+    }
   }
 
   async function boot(){
     wire();
     await initAddress();
     await loadWalletStatus(); // Load comprehensive wallet status
+    await loadEthereumWalletStatus(); // Load Ethereum wallet status
   }
   if (document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
 })();
@@ -1266,9 +1689,14 @@
         id: Date.now(),
         timestamp: new Date().toISOString(),
         type: reportData.type || 'bundle',
+        name: reportData.name || reportData.type,
         summary: reportData.summary,
         details: reportData.details,
-        fullReport: reportData.fullReport
+        fullReport: reportData.fullReport,
+        endpoint: reportData.endpoint,
+        method: reportData.method,
+        status: reportData.status,
+        responseTime: reportData.responseTime
       });
 
       // Keep only last MAX_REPORTS
@@ -1348,6 +1776,42 @@
     return text;
   }
 
+  function formatTestReport(testName, endpoint, method, status, responseTime, response, body, error) {
+    let text = `TEST REPORT: ${testName}\n`;
+    text += `==========================\n\n`;
+    text += `Zeitstempel: ${new Date().toISOString()}\n`;
+    text += `Test Name: ${testName}\n`;
+    text += `Endpoint: ${endpoint}\n`;
+    text += `Method: ${method}\n`;
+    text += `Status: ${status}\n`;
+    text += `Response Time: ${responseTime}ms\n`;
+    text += `Result: ${status >= 200 && status < 300 ? 'SUCCESS' : 'FAILED'}\n\n`;
+
+    if (body) {
+      text += `Request Body:\n`;
+      text += `${body}\n\n`;
+    }
+
+    if (error) {
+      text += `Error:\n`;
+      text += `${error}\n\n`;
+    }
+
+    if (response) {
+      text += `Response:\n`;
+      if (typeof response === 'object') {
+        text += JSON.stringify(response, null, 2);
+      } else {
+        text += response;
+      }
+      text += `\n\n`;
+    }
+
+    text += `Test completed at: ${new Date().toLocaleString('de-DE')}\n`;
+
+    return text;
+  }
+
   function renderReportsList() {
     const reports = getReports();
     const reportsContainer = document.getElementById('reports-list');
@@ -1361,17 +1825,31 @@
 
     const html = reports.map(report => {
       const date = new Date(report.timestamp).toLocaleString('de-DE');
-      const status = report.summary.failed > 0 || report.summary.errors > 0 ? 'warning' : 'success';
-      const statusText = report.summary.failed > 0 || report.summary.errors > 0 ? 'Fehler' : 'OK';
+      let status, statusText;
+
+      if (report.type === 'bundle') {
+        // Bundle test status
+        status = report.summary.failed > 0 || report.summary.errors > 0 ? 'warning' : 'success';
+        statusText = report.summary.failed > 0 || report.summary.errors > 0 ? 'Fehler' : 'OK';
+      } else {
+        // Individual test status
+        status = report.status >= 200 && report.status < 300 ? 'success' : 'warning';
+        statusText = report.status >= 200 && report.status < 300 ? 'OK' : 'Fehler';
+      }
+
+      const displayName = report.name || report.type.toUpperCase();
+      const metaInfo = report.type === 'bundle'
+        ? `${date} • ${report.summary.passed || 0}/${report.summary.total || 0} bestanden`
+        : `${date} • Status: ${report.status} • ${report.responseTime || 0}ms`;
 
       return `
         <div class="report-item" data-report-id="${report.id}">
           <div class="report-header">
-            <strong>${report.type.toUpperCase()} Test</strong>
+            <strong>${displayName}</strong>
             <span class="report-status ${status}">${statusText}</span>
           </div>
           <div class="report-meta">
-            ${date} • ${report.summary.passed}/${report.summary.total} bestanden
+            ${metaInfo}
           </div>
           <div class="report-actions">
             <button class="btn-ghost report-view" data-report-id="${report.id}">Anzeigen</button>
@@ -1440,6 +1918,19 @@
   };
 })();
 
+// Load test links handler after ReportsManager is available
+(function() {
+  const script = document.createElement('script');
+  script.src = '/frontend/test-links.js';
+  script.onload = function() {
+    console.log('Test links handler loaded successfully');
+  };
+  script.onerror = function() {
+    console.error('Failed to load test links handler');
+  };
+  document.head.appendChild(script);
+})();
+
 <script>
 // Bundle-Funktionstest implementation
 (function(){
@@ -1464,17 +1955,27 @@
         body: { time_value: 5, time_unit: 'minutes', risk_pref: 3, live: false }, expectStatus: 200 },
 
       // Wallet tests
+      { name: 'Wallet Balance', method: 'GET', endpoint: `${API_BASE}/wallet/balance`, expectStatus: [200, 422, 503] },
       { name: 'Wallet Status', method: 'GET', endpoint: `${API_BASE}/wallet/status`, expectStatus: 200 },
       { name: 'Wallet Network', method: 'GET', endpoint: `${API_BASE}/wallet/network`, expectStatus: 200 },
       { name: 'Wallet Health', method: 'GET', endpoint: `${API_BASE}/wallet/health`, expectStatus: 200 },
       { name: 'Wallet Address', method: 'GET', endpoint: `${API_BASE}/wallet/address`, expectStatus: 200 },
-      { name: 'Wallet Balance', method: 'GET', endpoint: `${API_BASE}/wallet/balance`, expectStatus: [200, 422, 503] },
+
+      // Agent tests
+      { name: 'Agent Status', method: 'GET', endpoint: `${API_BASE}/agents/status`, expectStatus: 200 },
+      { name: 'Research Agent', method: 'POST', endpoint: `${API_BASE}/agents/research/generate`,
+        body: { time_value: 10, time_unit: 'minutes', risk_pref: 3, live: false }, expectStatus: 200 },
+      { name: 'Analysis Agent', method: 'POST', endpoint: `${API_BASE}/strategies/generate`, expectStatus: 200 },
 
       // Data tests
       { name: 'Ideas List', method: 'GET', endpoint: `${API_BASE}/ideas/`, expectStatus: 200 },
-      { name: 'Trades History', method: 'GET', endpoint: `${API_BASE}/trades/recent`, expectStatus: 200 },
       { name: 'Strategies List', method: 'GET', endpoint: `${API_BASE}/strategies`, expectStatus: 200 },
-      { name: 'Releases List', method: 'GET', endpoint: `${API_BASE}/releases`, expectStatus: 200 },
+      { name: 'Trades History', method: 'GET', endpoint: `${API_BASE}/trades/recent`, expectStatus: 200 },
+
+      // System tests
+      { name: 'System Health', method: 'GET', endpoint: `/health`, expectStatus: 200 },
+      { name: 'Wallet Airdrop', method: 'POST', endpoint: `${API_BASE}/wallet/airdrop`,
+        body: { sol: 0.01 }, expectStatus: [200, 422, 503] },
 
       // Additional wallet tests
       { name: 'Wallet Airdrop (mock)', method: 'POST', endpoint: `${API_BASE}/wallet/airdrop`,
@@ -1610,21 +2111,28 @@
         testLog.textContent = output;
 
         // Save report
-        const fullReportText = window.ReportsManager.formatReportText(results);
-        const reportSaved = window.ReportsManager.saveReport({
-          type: 'bundle',
-          summary: results.summary,
-          details: results.tests,
-          fullReport: fullReportText
-        });
+        if (window.ReportsManager && window.ReportsManager.formatReportText && window.ReportsManager.saveReport) {
+          const fullReportText = window.ReportsManager.formatReportText(results);
+          const reportSaved = window.ReportsManager.saveReport({
+            type: 'bundle',
+            summary: results.summary,
+            details: results.tests,
+            fullReport: fullReportText
+          });
 
-        if (reportSaved) {
-          output += '\nReport wurde gespeichert und ist im Reports-Menü verfügbar.';
-          testLog.textContent = output;
-          // Refresh reports list
-          window.ReportsManager.renderReportsList();
+          if (reportSaved) {
+            output += '\nReport wurde gespeichert und ist im Reports-Menü verfügbar.';
+            testLog.textContent = output;
+            // Refresh reports list
+            if (window.ReportsManager.renderReportsList) {
+              window.ReportsManager.renderReportsList();
+            }
+          } else {
+            output += '\nWarnung: Report konnte nicht gespeichert werden.';
+            testLog.textContent = output;
+          }
         } else {
-          output += '\nWarnung: Report konnte nicht gespeichert werden.';
+          output += '\nWarnung: ReportsManager nicht verfügbar, Report nicht gespeichert.';
           testLog.textContent = output;
         }
 

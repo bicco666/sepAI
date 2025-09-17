@@ -7,6 +7,7 @@ _IDEAS: List[Dict[str, Any]] = []
 _id_counter = itertools.count(1)
 
 @router.get("/")
+@router.get("")
 def list_ideas():
     return _IDEAS
 
