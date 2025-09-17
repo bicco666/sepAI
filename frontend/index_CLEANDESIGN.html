@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Trading Dashboard – Solana KI Agents</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-800 h-screen flex flex-col p-4">
+    <h1 class="text-xl font-bold text-indigo-400 mb-6">Solana KI Trading</h1>
+    <nav class="flex flex-col space-y-2 text-sm">
+      <a href="#" class="px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">Dashboard</a>
+      <a href="#" class="px-3 py-2 rounded-lg hover:bg-gray-700">Abteilungen</a>
+      <a href="#" class="px-3 py-2 rounded-lg hover:bg-gray-700">Aufträge</a>
+      <a href="#" class="px-3 py-2 rounded-lg hover:bg-gray-700">Historie</a>
+      <a href="#" class="px-3 py-2 rounded-lg hover:bg-gray-700">Einstellungen</a>
+    </nav>
+    <footer class="mt-auto text-xs text-gray-400 pt-4">
+      v0.6 – Nur Layout
+    </footer>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col h-screen">
+    <!-- Topbar -->
+    <header class="bg-gray-800 p-6 flex justify-between items-start space-x-6">
+      <!-- Organigramm größer -->
+      <div class="bg-gray-700 rounded-xl p-4 text-sm leading-tight font-mono">
+<pre class="overflow-x-auto text-sm">
+   ┌────────────────────┐
+   │   Geschäftsführung │
+   │        (CEO)       │
+   └───────────┬────────┘
+               │
+ ┌───────┬─────┼───────┬─────────┐
+ │Quality│Forschung│Analyse│Execution│
+ └───────┴─────┴───────┴─────────┘
+               │
+          Update Handler
+</pre>
+      </div>
+
+      <!-- Wallet größer -->
+      <div class="bg-gray-700 rounded-xl p-5 text-base min-w-[250px]">
+        <h2 class="text-lg font-semibold mb-3">Wallet</h2>
+        <div class="grid grid-cols-1 gap-2">
+          <div><strong>Adresse:</strong> 9x123...abcd</div>
+          <div><strong>Kontostand:</strong> 123.45 SOL</div>
+          <div><strong>Budget/Testbudget:</strong> 100 / 20 SOL</div>
+        </div>
+        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full text-sm hover:bg-indigo-500">
+          Kontostand abfragen
+        </button>
+      </div>
+
+      <!-- Tests (Quick Tab) -->
+      <div class="bg-gray-700 rounded-xl p-5 text-base min-w-[260px]">
+        <h2 class="text-lg font-semibold mb-3">Tests (Quick Tab)</h2>
+
+        <div class="space-y-3">
+          <!-- NEU: Bundle-Test -->
+          <div class="bg-gray-800 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-sm">Bundle: Alle Funktionstests</div>
+                <div class="text-xs text-gray-300">Führt alle Tests in einem Lauf aus</div>
+              </div>
+              <button id="runBundleTests"
+                      class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-indigo-500">
+                Ausführen
+              </button>
+            </div>
+            <!-- Ergebnis-Feld direkt darunter -->
+            <label for="bundleResult" class="block text-xs mt-3 text-gray-300">Ergebnis</label>
+            <input id="bundleResult"
+                   class="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm"
+                   placeholder="— noch kein Ergebnis —" readonly>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Sections -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+      <!-- Abteilungen -->
+      <section class="bg-gray-800 rounded-2xl shadow p-4">
+        <h2 class="text-lg font-semibold mb-4">Abteilungen 2–5 • Status</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="bg-gray-700 rounded-xl p-3">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-semibold">Quality</h3>
+              <span class="text-xs bg-green-600 px-2 py-0.5 rounded-full">OK</span>
+            </div>
+            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">v1.2.3</span>
+          </div>
+          <div class="bg-gray-700 rounded-xl p-3">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-semibold">Forschung</h3>
+              <span class="text-xs bg-yellow-500 px-2 py-0.5 rounded-full">Busy</span>
+            </div>
+            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">v1.2.3</span>
+            <label class="block text-sm mt-3">RISK-Level</label>
+            <input type="range" min="1" max="5" value="3" class="w-full">
+            <button class="mt-2 bg-indigo-600 text-white px-2 py-1 rounded-lg w-full hover:bg-indigo-500">Idee generieren</button>
+          </div>
+          <div class="bg-gray-700 rounded-xl p-3">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-semibold">Analyse</h3>
+              <span class="text-xs bg-green-600 px-2 py-0.5 rounded-full">OK</span>
+            </div>
+            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">v1.2.3</span>
+            <label class="block text-sm mt-3">RISK-Level</label>
+            <input type="range" min="1" max="5" value="2" class="w-full">
+            <button class="mt-2 bg-indigo-600 text-white px-2 py-1 rounded-lg w-full hover:bg-indigo-500">Idee generieren</button>
+          </div>
+          <div class="bg-gray-700 rounded-xl p-3">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-semibold">Execution</h3>
+              <span class="text-xs bg-green-600 px-2 py-0.5 rounded-full">OK</span>
+            </div>
+            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">v1.2.3</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Zukünftige Aufträge -->
+      <section class="bg-gray-800 rounded-2xl shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">Zukünftige Aufträge (Ideen)</h2>
+        <table class="w-full text-sm border border-gray-700">
+          <thead class="bg-gray-700 text-left">
+            <tr>
+              <th class="p-2 border border-gray-600">ID</th>
+              <th class="p-2 border border-gray-600">Asset</th>
+              <th class="p-2 border border-gray-600">RISK-Override</th>
+              <th class="p-2 border border-gray-600">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 border border-gray-600">20250915_001</td>
+              <td class="p-2 border border-gray-600">SOL</td>
+              <td class="p-2 border border-gray-600">
+                <input type="number" value="3" min="1" max="5" class="border rounded w-16 bg-gray-900 text-white">
+              </td>
+              <td class="p-2 border border-gray-600 space-x-2">
+                <button class="bg-indigo-600 px-2 py-1 rounded text-xs hover:bg-indigo-500">Strategie</button>
+                <button class="bg-indigo-600 px-2 py-1 rounded text-xs hover:bg-indigo-500">QA</button>
+                <button class="bg-indigo-600 px-2 py-1 rounded text-xs hover:bg-indigo-500">Einplanen</button>
+                <button class="bg-red-600 px-2 py-1 rounded text-xs hover:bg-red-500">Verwerfen</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Historie -->
+      <section class="bg-gray-800 rounded-2xl shadow p-4">
+        <h2 class="text-lg font-semibold mb-2">Historie (20)</h2>
+        <table class="w-full text-sm border border-gray-700">
+          <thead class="bg-gray-700 text-left">
+            <tr>
+              <th class="p-2 border border-gray-600">Zeit</th>
+              <th class="p-2 border border-gray-600">Abteilung</th>
+              <th class="p-2 border border-gray-600">Asset</th>
+              <th class="p-2 border border-gray-600">Aktion</th>
+              <th class="p-2 border border-gray-600">PNL (SOL)</th>
+              <th class="p-2 border border-gray-600">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 border border-gray-600">15.09.2025 12:00</td>
+              <td class="p-2 border border-gray-600">Execution</td>
+              <td class="p-2 border border-gray-600">SOL</td>
+              <td class="p-2 border border-gray-600">BUY</td>
+              <td class="p-2 border border-gray-600 text-green-400">+0.25</td>
+              <td class="p-2 border border-gray-600">
+                <span class="bg-green-600 px-2 py-0.5 rounded-full text-xs">Abgeschlossen</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const btn = document.getElementById('runBundleTests');
+      const out = document.getElementById('bundleResult');
+      if (btn && out) {
+        btn.addEventListener('click', () => {
+          out.value = 'Running…';
+          setTimeout(() => {
+            out.value = '10/10 Pass';
+          }, 400);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
