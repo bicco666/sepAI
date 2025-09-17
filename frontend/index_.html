@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang=\"de\">
+<head>
+  <meta charset=\"UTF-8\">
+  <title>sepAI – Systemtest Dashboard</title>
+  <script src=\"https://cdn.tailwindcss.com\"></script>
+</head>
+<body class=\"bg-gray-900 text-gray-100 min-h-screen\">
+  <header class=\"bg-gray-800 px-6 py-4 flex items-center justify-between\">
+    <h1 class=\"text-xl font-bold text-indigo-400\">sepAI • Minimal Dashboard (v1)</h1>
+    <div class=\"flex items-center gap-2\">
+      <button id=\"btn-system\" class=\"bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg\">Systemdurchlauf</button>
+      <button id=\"btn-balance\" class=\"bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg\">Kontostand abfragen</button>
+      <button id=\"btn-last-report\" class=\"bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg\">Letzten Report laden</button>
+    </div>
+  </header>
+
+  <main class=\"p-6 space-y-6\">
+    <div id=\"summary\" class=\"hidden bg-red-900/40 border border-red-600 text-red-200 rounded-lg p-3\"></div>
+
+    <section class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">
+      <div class=\"bg-gray-800 rounded-xl p-4\">
+        <h2 class=\"font-semibold mb-2\">Wallet</h2>
+        <div><strong>Balance:</strong> <span id=\"wallet-balance\">–</span></div>
+        <div class=\"text-xs text-gray-400 mt-2\">Mock-Modus</div>
+      </div>
+
+      <div class=\"bg-gray-800 rounded-xl p-4 md:col-span-2\">
+        <h2 class=\"font-semibold mb-2\">Report</h2>
+        <pre id=\"report-content\" class=\"bg-gray-900 rounded-lg p-3 overflow-auto min-h-[140px] text-sm\"></pre>
+      </div>
+    </section>
+
+    <section class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">
+      <div class=\"bg-gray-800 rounded-xl p-4\">
+        <h3 class=\"font-semibold mb-2\">Ideen</h3>
+        <ul id=\"ideas\" class=\"text-sm space-y-1\"></ul>
+      </div>
+      <div class=\"bg-gray-800 rounded-xl p-4\">
+        <h3 class=\"font-semibold mb-2\">Aufträge</h3>
+        <ul id=\"orders\" class=\"text-sm space-y-1\"></ul>
+      </div>
+      <div class=\"bg-gray-800 rounded-xl p-4\">
+        <h3 class=\"font-semibold mb-2\">Historie</h3>
+        <ul id=\"history\" class=\"text-sm space-y-1\"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src=\"/static/app.js\"></script>
+</body>
+</html>
