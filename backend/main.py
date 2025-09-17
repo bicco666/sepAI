@@ -7,11 +7,9 @@ from backend.api import wallet, agents, ideas, strategies, trades, tests
 app = FastAPI(title="Solana Trading Organisation API", version="0.1")
 
 # CORS for frontend
-origins_env = "*"  # Simplified for testing
-allow_origins = [origins_env]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

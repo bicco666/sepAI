@@ -178,6 +178,7 @@
         <div class="toolbar">
           <button class="btn" id="setAddress">Adresse setzen</button>
           <button class="btn" id="refreshBalance">Kontostand abrufen</button>
+          <button class="btn" id="testWalletAPI">Test Wallet API</button>
           <button class="btn" id="requestAirdrop" style="display:none">Airdrop anfragen (0.2 SOL)</button>
           <button class="btn" id="btnGenerateStrategies" title="Trigger: Analyse-Agent">Strategien generieren</button>
         </div>
@@ -995,10 +996,21 @@
         const airdropBtn = document.getElementById('requestAirdrop');
         const statusEl = document.getElementById('walletStatus');
 
+        console.log('Loading wallet status...');
+
         try {
+          console.log('Fetching /api/v1/wallet/status...');
           const res = await fetch('/api/v1/wallet/status');
-          if (!res.ok) throw new Error('HTTP '+res.status);
+          console.log('Response status:', res.status);
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            console.error('HTTP error:', res.status, errorText);
+            throw new Error('HTTP '+res.status + ': ' + errorText);
+          }
+
           const data = await res.json();
+          console.log('Received data:', data);
 
           // Update network status
           networkEl.textContent = data.network.toUpperCase();
@@ -1043,12 +1055,14 @@
             statusEl.style.display = 'none';
           }
 
+          console.log('Wallet status loaded successfully');
+
         } catch (e) {
           console.error('Wallet status error:', e);
           addressEl.textContent = 'Fehler beim Laden';
           balanceEl.textContent = 'Fehler';
           networkEl.textContent = 'Unbekannt';
-          statusEl.textContent = 'Fehler beim Laden des Wallet-Status';
+          statusEl.textContent = 'Fehler beim Laden des Wallet-Status: ' + e.message;
           statusEl.style.display = 'block';
         }
       }
@@ -1134,7 +1148,33 @@
 
       const btn = document.getElementById('refreshBalance');
       if (btn) {
-        btn.onclick = loadWalletStatus;
+        btn.onclick = async () => {
+          console.log('Refresh balance button clicked');
+          await loadWalletStatus();
+        };
+      }
+
+      // Test Wallet API button
+      const testBtn = document.getElementById('testWalletAPI');
+      if (testBtn) {
+        testBtn.onclick = async () => {
+          console.log('Test button clicked');
+          try {
+            const res = await fetch('/api/v1/wallet/status');
+            console.log('Test fetch response:', res.status);
+            if (!res.ok) {
+              throw new Error('HTTP ' + res.status);
+            }
+            const data = await res.json();
+            console.log('Test data:', data);
+            toast('API Test erfolgreich! Netzwerk: ' + data.network);
+            // Reload wallet status
+            await loadWalletStatus();
+          } catch (e) {
+            console.error('Test API error:', e);
+            toast('API Test fehlgeschlagen: ' + e.message);
+          }
+        };
       }
 
       // Airdrop functionality
