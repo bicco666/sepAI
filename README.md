@@ -1,58 +1,85 @@
-﻿# sepAI
-Multi-agent research and execution software, with dashboard and company structure.
+﻿# Solana/Ethereum Trading Dashboard
 
-## Quick start (API)
+Einfaches lokales System für Trading-Ideen und Order-Management ohne Datenbank.
 
-Prerequisites: Python 3.10+
+## Quickstart
 
-1) Install dependencies
+```bash
+# Virtual Environment erstellen und aktivieren
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# oder
+.venv\Scripts\activate     # Windows
+
+# Abhängigkeiten installieren
+pip install flask flask-cors pytest
+
+# Server starten
+python backend/app.py
+
+# Tests ausführen
+pytest -q
+
+# Reports anzeigen
+ls reports/
+```
+
+## Architektur
 
 ```
-pip install -r requirements.txt
+sepAI/
+├── backend/
+│   ├── app.py              # Flask API Server
+│   ├── state.py            # In-Memory State Management
+│   ├── scheduler.py        # Background Order Processing
+│   └── chains/
+│       ├── solana_mock.py  # Solana Chain Mock
+│       └── ethereum_mock.py # Ethereum Chain Mock
+├── frontend/
+│   ├── index.html          # Haupt-Dashboard
+│   ├── index_alt.html      # Identische Kopie
+│   └── js/
+│       └── app.js          # Frontend JavaScript
+├── tests/                  # Test Cases
+├── reports/                # Generated Reports
+└── tools/
+    └── sync_index.sh       # HTML Sync Script
 ```
 
-2) Run the API (from `sepAI` root)
+## API Endpunkte
+
+- `GET  /healthz` - Health Check
+- `POST /api/v1/ideas` - Neue Idee erstellen
+- `GET  /api/v1/ideas` - Ideen auflisten
+- `POST /api/v1/ideas/{id}/to-analysis` - Idee zur Analyse
+- `POST /api/v1/ideas/{id}/schedule` - Idee einplanen
+- `GET  /api/v1/orders` - Orders auflisten
+- `POST /api/v1/orders/{id}/execute` - Order ausführen
+- `GET  /api/v1/tests/run?case=1` - Einzeltest ausführen
+- `GET  /api/v1/tests/bundle` - Alle Tests ausführen
+- `POST /api/v1/audit/run` - Quality Audit
+
+## Business Logic
+
+- **Chain Assignment**: Jede Idee hat eine Chain (solana/ethereum)
+- **Budget Policy**: `cap = min(0.05*budget_total*p_success, 0.05*budget_total)`
+- **State Machine**: NEW → NEEDS_REVIEW → SCHEDULED → CLOSED/FAILED
+- **Background Processing**: Scheduler führt geplante Orders automatisch aus
+
+## Test Cases
+
+1. **Flow**: Idee → Analyse → Order → Execution
+2. **Chains**: Solana/Ethereum Validierung
+3. **Budget**: Policy-Validierung
+4. **Audit**: Vollständige Systemprüfung
+5. **Dashboard**: UI-Integration
+
+## Reports
+
+Alle Tests und Audits generieren Markdown-Berichte in `reports/`:
 
 ```
-uvicorn src.main:app --reload
-```
-
-4) Run tests
-
-```
-# install deps and run pytest
-./scripts/run_tests.ps1
-```
-
-3) Example endpoints
-
-- `GET /api/v1/wallet/balance` â€” demo wallet balance
-- `POST /api/v1/ideas` â€” create an idea (JSON body)
-- `GET /api/v1/trades/recent` â€” recent trades (demo data)
-- `GET /api/v1/agents/status` â€” agent versions/status
-- `GET /api/v1/strategies` â€” list strategies
-- `GET /api/v1/releases` â€” list releases
-
-## Dashboard (mock)
-
-Open `docs/ceo_dashboard_mock_v16.html` in a browser. Initial buttons are wired to API (balance, idea-create) for a basic end-to-end demo.
-
-
-
-
-
-
-## Configuration
-
-Environment variables:
-
-- ALLOW_ORIGINS — comma-separated allowed origins for CORS (default *). Example: http://localhost:5173,http://127.0.0.1:5173
-- REDIS_URL — optional Redis connection (e.g., 
-edis://localhost:6379/0). If unset or unavailable, an in-memory fallback is used.
- - API_KEY — optional API key to protect sensitive endpoints (e.g. `/api/v1/trades/execute`). If unset, auth is disabled for local dev.
- - SOLANA_RPC_URL — optional Solana RPC URL (e.g. devnet RPC). If set, the Execution adapter will attempt to perform real RPC calls when `live=true` is passed to execute endpoints.
- - ALLOW_MAINNET_TRANSACTIONS — set to a truthy value (`1`, `true`, `yes`) to allow mainnet transactions. Default: disabled. Use with caution.
- - ENABLE_INTERNET_RESEARCH — set to a truthy value to allow the research agent to fetch token lists from public APIs (e.g. CoinGecko). Default: disabled (safer for offline/dev).
-
-See .env.example for a starter.
-
+reports/
+├── bundle_test_20231201_120000.md
+├── audit_20231201_120000.md
+└── ...
